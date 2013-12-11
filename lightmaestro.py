@@ -1,37 +1,35 @@
 #!/usr/bin/env python
 
-import os
-import time
+"""
+@copyright: 2013 Single D Software - All Rights Reserved
+@summary: Main module for Light Maestro.
+"""
 
-import rtmidi
 
-_folder = 'triggers'
-_polldelay = 0.25
+# Standard library imports
+import argparse
+import logging
 
-_starttime = time.time()
+# Application imports
+import httpserver
+import wavetrigger
 
-_atimes = {}
+# Parse the command line parameters
+_parser = argparse.ArgumentParser()
+_parser.add_argument('-c', '--console', default='GenericConsole', help='console module to use')
+_parser.add_argument('-d', '--debug', dest='debug', action='store_true', help='enable debug logging')
+_args = _parser.parse_args()
 
-midi = rtmidi.MidiOut()
-usbports = [p for p in midi.get_ports() if 'USB' in p]
+# Configure the logging module.
+_logformat = '%(asctime)s : %(levelname)s : %(name)s : %(message)s'
+_loglevel = logging.DEBUG if _args.debug else logging.INFO
+logging.basicConfig(format=_logformat, level=_loglevel)
 
-if not usbports:
-    print('No USB MIDI adapter found.')
-    exit(1)
+# Initialize the console object depending on command line parameters.
+console = __import__(_args.console.lower())
+Console = getattr(console, _args.console)
+_console = Console()
 
-midi.open_port(name=usbports[0])
-
-while True:
-    time.sleep(_polldelay)
-    for f in os.listdir(_folder):
-        fpath = os.path.join(_folder, f)
-        atime = os.stat(fpath).st_atime
-        lastatime = _atimes.get(f, _starttime)
-        print(f, lastatime, atime)
-        if atime - lastatime > 1.0:
-            _atimes[f] = atime
-            _, p, _, s = os.path.splitext(f)[0].split()
-            i = (int(p) - 1) * 24 + int(s) - 1
-            channel, note = divmod(i, 72)
-            midi.send_message((0x90 | channel, note, 127))
-            print('Sent note {0} to channel {1}'.format(note, channel))
+# Start the application components
+httpserver.start(_console)
+wavetrigger.start()
