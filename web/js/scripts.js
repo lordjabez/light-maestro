@@ -7,11 +7,8 @@
 
 var JSON_HEADER = {'content-type': 'application/json'}
 
-var pageNum;
 
-
-function sendCommand(event) {
-    var sceneNum = parseInt($(this).html());
+function sendCommand(pageNum, sceneNum) {
     var sceneId = (pageNum - 1) * 24 + (sceneNum - 1);
     var url = '/scenes/_current';
     var data = JSON.stringify({'id': sceneId});
@@ -27,7 +24,7 @@ $(document).on("pagebeforeshow", function(event, data) {
     });
 
     // Grab the page identifier from the URL.
-    pageNum = parseInt(location.search.split('=')[1]);
+    var pageNum = parseInt(location.search.split('=')[1]);
 
     // Set the page header according to the document title and optional id.
     var header = document.title;
@@ -36,7 +33,10 @@ $(document).on("pagebeforeshow", function(event, data) {
     }
     $('div:jqmData(role="header") h1').text(header);
 
-    // TODO do we need to figure out which page we're on here?
-    $('button.scene-selector').bind('tap', sendCommand);
+    // Bind command send events to scene select buttons
+    $('#page-page button.scene-selector').bind('tap', function(event) {
+        var sceneNum = parseInt($(this).html());
+        sendCommand(pageNum, sceneNum);
+    });
 
 });
