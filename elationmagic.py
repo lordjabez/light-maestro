@@ -51,6 +51,6 @@ class ElationMagic(console.Console):
         for p, portname in enumerate(self._midi.get_ports()):
             if 'USB' in portname:
                 self._midi.open_port(p)
-                _logger.info('Connect to MIDI device "{0}"'.format(self._midi.get_port_name(p)))
+                _logger.info('Connected to MIDI device "{0}"'.format(self._midi.get_port_name(p)))
                 return
         _logger.warning('No USB MIDI device found')
