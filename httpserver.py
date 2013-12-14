@@ -6,6 +6,7 @@
 
 # Standard library imports
 import json
+import logging
 import threading
 
 # Additional library imports
@@ -70,5 +71,6 @@ def start(con):
     @param con: The console object into which the interface functions will call.
     """
     _Console.console = con
+    logging.getLogger('Rocket').setLevel(logging.WARNING)
     kwargs = {'server': 'rocket', 'host': '0.0.0.0', 'port': 3520, 'debug': False, 'quiet': True}
     threading.Thread(target=bottle.run, kwargs=kwargs).start()
