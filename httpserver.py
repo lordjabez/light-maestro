@@ -59,16 +59,16 @@ def _returnerror(error):
     Return a custom error message for invalid or failed requests.
     @param error: HTTPError object (hopefully) describing what went wrong.
     """
-    # For some reason bottle doesn't automagically convert dicts
+    # For some reason bottle doesn't automatically convert dicts
     # to JSON in the error handler, so we have to do it manually.
     bottle.response.content_type = 'application/json'
     return json.dumps({'error': error.body})
 
 
-def start(console):
+def start(con):
     """Initializes the module.
-    @param console: The console object into which the interface functions will call.
+    @param con: The console object into which the interface functions will call.
     """
-    _Console.console = console
+    _Console.console = con
     kwargs = {'server': 'rocket', 'host': '0.0.0.0', 'port': 3520, 'debug': False, 'quiet': True}
     threading.Thread(target=bottle.run, kwargs=kwargs).start()

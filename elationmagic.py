@@ -18,15 +18,10 @@ import console
 # Named logger for this module
 _logger = logging.getLogger(__name__)
 
-# Silence errors in the rtmidi logger
-logging.getLogger('MidiOutWinMM::sendMessage').setLevel(logging.WARNING)
-logging.getLogger('MidiOutWinMM').setLevel(logging.WARNING)
-logging.getLogger('sendMessage').setLevel(logging.WARNING)
-
 
 class ElationMagic(console.Console):
     """The console class that communicates with the Elation Magic 260."""
-    
+
     def _sendmidi(self, channel, note):
         try:
             self._midi.send_message((rtmidi.midiconstants.NOTE_ON | channel, note, 127))
@@ -50,9 +45,10 @@ class ElationMagic(console.Console):
         self._sendmidi(channel, note)
 
     def __init__(self):
+        super().__init__()
         self._midi = rtmidi.MidiOut()
         usbports = [p for p in self._midi.get_ports() if 'USB' in p]
         if not usbports:
             _logger.error('No USB MIDI adapter found.')
             return
-        midi.open_port(name=usbports[0])
+        self._midi.open_port(name=usbports[0])
