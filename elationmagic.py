@@ -25,6 +25,7 @@ class ElationMagic(console.Console):
     def _sendmidi(self, channel, note):
         try:
             self._midi.send_message((rtmidi.midiconstants.NOTE_ON | channel, note, 127))
+            _logger.debug('Sent note {0} to channel {1}'.format(note, channel))
         except RuntimeError:
             raise console.CommunicationError
 
@@ -47,8 +48,9 @@ class ElationMagic(console.Console):
     def __init__(self):
         super().__init__()
         self._midi = rtmidi.MidiOut()
-        usbports = [p for p in self._midi.get_ports() if 'USB' in p]
-        if not usbports:
-            _logger.error('No USB MIDI adapter found.')
-            return
-        self._midi.open_port(name=usbports[0])
+        for p, portname in enumerate(self._midi.get_ports()):
+            if 'USB' in portname:
+                self._midi.open_port(p)
+                _logger.info('Connect to MIDI device "{0}"'.format(self._midi.get_port_name(p)))
+                return
+        _logger.warning('No USB MIDI device found')
