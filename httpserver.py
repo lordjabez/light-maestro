@@ -38,6 +38,14 @@ def _getconsole():
     return _Console.console.getconsole()
 
 
+@bottle.put('/shows/_current')
+def _putcurrentshow():
+    try:
+        _Console.console.setcurrentshow(bottle.request.json)
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
 @bottle.put('/scenes/_current')
 def _putcurrentscene():
     try:

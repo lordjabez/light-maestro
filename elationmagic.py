@@ -37,6 +37,15 @@ class ElationMagic(console.Console):
         condition = 'operational' if self._midi else 'nonoperational'
         return {'condition': condition}
 
+    def setcurrentshow(self, show):
+        """
+        Set the current show
+        @param scene: Dictionary containing the show identifier to make current
+        """
+        channel, note = divmod(int(show['id']), 24)
+        note += 72
+        self._sendmidi(channel, note)
+
     def setcurrentscene(self, scene):
         """
         Set the current scene
