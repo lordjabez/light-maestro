@@ -12,6 +12,7 @@
     <link rel="apple-touch-icon" sizes="196x196" href="img/icon.png"/>
     <link rel="icon" href="icon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="lib/jquery-mobile/jquery.mobile-1.3.2.min.css"/>
+    <link rel="stylesheet" href="css/styles.css"/>
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/jquery-mobile/jquery.mobile-1.3.2.min.js"></script>
     <script src="js/scripts.js"></script>
@@ -19,25 +20,75 @@
 
 <body>
 
-<div data-role="page" data-theme="a" id="page-index">
+<div data-role="page" data-theme="a">
 
-    <div data-role="header" data-position="fixed"><h1></h1></div>
+    <div data-role="header" data-position="fixed">
+        <button data-icon="arrow-l" data-iconpos="notext" class="page-changer"></button>
+        <h1></h1>
+        <button data-icon="arrow-r" data-iconpos="notext" class="page-changer"></button>
+    </div>
 
     <div data-role="content">
-        <ul data-role="listview">
-            <li><a href="page.html?id=1">Page 1</a></li>
-            <li><a href="page.html?id=2">Page 2</a></li>
-            <li><a href="page.html?id=3">Page 3</a></li>
-            <li><a href="page.html?id=4">Page 4</a></li>
-            <li><a href="page.html?id=5">Page 5</a></li>
-            <li><a href="page.html?id=6">Page 6</a></li>
-            <li><a href="page.html?id=7">Page 7</a></li>
-            <li><a href="page.html?id=8">Page 8</a></li>
-            <li><a href="page.html?id=9">Page 9</a></li>
-            <li><a href="page.html?id=10">Page 10</a></li>
-            <li><a href="page.html?id=11">Page 11</a></li>
-            <li><a href="page.html?id=12">Page 12</a></li>
-        </ul>
+
+       <div class="ui-grid-a">
+            <div class="ui-block-a">
+                <div class="ui-grid-b">
+                    <div class="ui-block-a"><button class="scene-selector">1</button></div>
+                    <div class="ui-block-b"><button class="scene-selector">2</button></div>
+                    <div class="ui-block-c"><button class="scene-selector">3</button></div>
+                </div>
+            </div>
+            <div class="ui-block-b">
+                <div class="ui-grid-b">
+                    <div class="ui-block-a"><button class="scene-selector">4</button></div>
+                    <div class="ui-block-b"><button class="scene-selector">5</button></div>
+                    <div class="ui-block-c"><button class="scene-selector">6</button></div>
+                </div>
+            </div>
+            <div class="ui-block-a">
+                <div class="ui-grid-b">
+                    <div class="ui-block-a"><button class="scene-selector">7</button></div>
+                    <div class="ui-block-b"><button class="scene-selector">8</button></div>
+                    <div class="ui-block-c"><button class="scene-selector">9</button></div>
+                </div>
+            </div>
+            <div class="ui-block-b">
+                <div class="ui-grid-b">
+                    <div class="ui-block-a"><button class="scene-selector">10</button></div>
+                    <div class="ui-block-b"><button class="scene-selector">11</button></div>
+                    <div class="ui-block-c"><button class="scene-selector">12</button></div>
+                </div>
+            </div>
+            <div class="ui-block-a">
+                <div class="ui-grid-b">
+                    <div class="ui-block-a"><button class="scene-selector">13</button></div>
+                    <div class="ui-block-b"><button class="scene-selector">14</button></div>
+                    <div class="ui-block-c"><button class="scene-selector">15</button></div>
+                </div>
+            </div>
+            <div class="ui-block-b">
+                <div class="ui-grid-b">
+                    <div class="ui-block-a"><button class="scene-selector">16</button></div>
+                    <div class="ui-block-b"><button class="scene-selector">17</button></div>
+                    <div class="ui-block-c"><button class="scene-selector">18</button></div>
+                </div>
+            </div>
+            <div class="ui-block-a">
+                <div class="ui-grid-b">
+                    <div class="ui-block-a"><button class="scene-selector">19</button></div>
+                    <div class="ui-block-b"><button class="scene-selector">20</button></div>
+                    <div class="ui-block-c"><button class="scene-selector">21</button></div>
+                </div>
+            </div>
+            <div class="ui-block-b">
+                <div class="ui-grid-b">
+                    <div class="ui-block-a"><button class="scene-selector">22</button></div>
+                    <div class="ui-block-b"><button class="scene-selector">23</button></div>
+                    <div class="ui-block-c"><button class="scene-selector">24</button></div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
