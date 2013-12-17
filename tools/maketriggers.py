@@ -28,5 +28,5 @@ for wave in wavelist:
     datachunk = struct.pack('<4sL', 'data'.encode(), 0)
     reqchunk = struct.pack('<4sL', 'req '.encode(), reqlen) + reqdata.encode()
 
-    with open(wave['name'] + '.wav', 'wb') as f:
+    with open('../triggers/' + wave['name'] + '.wav', 'wb') as f:
         f.write(riffchunk + fmtchunk + datachunk + reqchunk)
