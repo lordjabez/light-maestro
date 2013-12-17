@@ -53,3 +53,4 @@ class ElationMagic(console.Console):
                 _logger.info('Connected to MIDI device "{0}"'.format(self._midi.get_port_name(p)))
                 super().__init__()
         _logger.warning('No USB MIDI device found')
+
