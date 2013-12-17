@@ -16,13 +16,7 @@ import bottle
 import console
 
 
-# Increase the maximum body size allowed by bottle
-bottle.BaseRequest.MEMFILE_MAX = 1024 * 1024
-
-# Regular expressions that define a number and a list of numbers
-_numregex = '[0-9]+'
-_numsregex = '[0-9]+(,[0-9]+)*'
-
+# TODO: add JSON validation
 
 class _Console(object):
     console = None
@@ -35,15 +29,64 @@ def _getstatus():
 
 @bottle.get('/channels')
 def _getchannels():
-    return _Console.console.getchannels()
+    try:
+        return _Console.console.getchannels()
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
+@bottle.post('/channels/_load')
+def _postchannelsload():
+    try:
+        _Console.console.loadchannels(bottle.request.json)
+        bottle.response.status = 202
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
+@bottle.get('/scenes/<sceneid>')
+def _getscene(sceneid):
+    try:
+        return _Console.console.getscene(sceneid)
+    except console.SceneNotFoundError:
+        bottle.abort(404, 'Scene "{0}" not found'.format(sceneid))
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
+@bottle.put('/scenes/<sceneid>')
+def _putscene(sceneid):
+    try:
+        _Console.console.savescene(sceneid, bottle.request.json)
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
+@bottle.delete('/scenes/<sceneid>')
+def _deletescene(sceneid):
+    try:
+        _Console.console.deletescene(sceneid)
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
 
 
 @bottle.post('/scenes/<sceneid>/_load')
-def _loadscene(sceneid):
+def _postsceneload(sceneid):
     try:
         _Console.console.loadscene(sceneid)
+        bottle.response.status = 202
+    except console.SceneAlreadyLoadedError:
+        bottle.response.status = 200
     except console.SceneNotFoundError:
         bottle.abort(404, 'Scene "{0}" not found'.format(sceneid))
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
+@bottle.post('/scenes/<sceneid>/_save')
+def _postscenesave(sceneid):
+    try:
+        _Console.console.savescene(sceneid)
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 

@@ -8,10 +8,18 @@
 import collections
 import json
 import logging
+import os
+import threading
+import time
 
 
 # Named logger for this module
 _logger = logging.getLogger(__name__)
+
+
+class SceneAlreadyLoadedError(Exception):
+    """Requested scene is loading or already loaded."""
+    pass
 
 
 class SceneNotFoundError(Exception):
@@ -27,47 +35,99 @@ class CommunicationError(Exception):
 class Console():
     """Abstract class from which all other console classes inherit."""
 
+    def _getscenefilename(self, sceneid):
+        return os.path.join('scenes', sceneid)
+
     def getstatus(self):
         """
         Provide status information for the connection to the console.
         @return: Dictionary containing status information
         """
-        return {'module': self.__class__.__name__.lower(), 'condition': 'operational'}
+        status = {'condition': 'operational'}
+        status['interface'] = self.__class__.__name__.lower()
+        status['fading'] = self._target is not None
+        if self._sceneid is not None:
+            status['scene'] = self._sceneid
+        return status
 
     def getchannels(self):
         """
         Provide all DMX channel values.
         @return: Dictionary containing all channel numbers and values
         """
-        return self._channels
+        return {'channels': self._channels}
 
-    def setchannels(self, channels):
-        """
-        Set a collection of channels to particular values
-        @param channels: Dictionary containing the channel numbers and values to update
-        """
-        self._channels.update(channels)
+    def loadchannels(self, data, sceneid=None):
+        with self._lock:
+            self._target = data.get('channels', {})
+            self._fadetime = time.time() + data.get('fade', 0.0)
+            self._sceneid = sceneid
+
+    def getscene(self, sceneid):
+        try:
+            with open(self._getscenefilename(sceneid)) as f:
+                return json.load(f)
+        except IOError:
+            raise SceneNotFoundError
+        except ValueError:
+            raise CommunicationError
 
     def loadscene(self, sceneid):
         """
         Set the current scene.
         @param scene: Dictionary containing the scene identifier to make current
         """
-        scenefile = 'scenes/{0}.json'.format(sceneid)
-        try:
-            with open(scenefile) as f:
-                scene = json.load(f)
-        except (IOError, ValueError):
-            raise SceneNotFoundError
-        self.setchannels(scene.get('channels', {}))
+        if self._sceneid == sceneid:
+            raise SceneAlreadyLoadedError
+        scene = self.getscene(sceneid)
+        self.loadchannels(scene, sceneid)
         _logger.debug('Loading scene {0}'.format(sceneid))
+
+    def savescene(self, sceneid, scene=None):
+        if scene is None:
+            scene = self.getchannels()
+        try:
+            print(scene)
+            with open(self._getscenefilename(sceneid), 'wb') as f:
+                f.write(json.dumps(scene, indent=4).encode())
+        except IOError:
+            raise CommunicationError
+
+    def deletescene(self, sceneid):
+        try:
+            os.remove(self._getscenefilename(sceneid))
+        except FileNotFoundError:
+            return
+        except OSError:
+            raise CommunicationError
+
+    def _fader(self):
+        fadedelay = 0.1
+        while True:
+            time.sleep(fadedelay)
+            if self._target:
+                with self._lock:
+                    remainingfade = self._fadetime - time.time()
+                    if remainingfade > fadedelay:
+                        for c, v in self._target.items():
+                            delta = (self._target[c] - self._channels[c]) * fadedelay / remainingfade
+                            self._channels[c] += delta
+                    else:
+                        self._channels.update(self._target)
+                        self._target = None
 
     def __init__(self, parameter=None):
         """Initialize the console object."""
         # Set up the channel value dictionary.
-        self._channels = collections.OrderedDict((str(c+1), 0) for c in range(512))
+        self._channels = collections.OrderedDict((str(c+1), 0.0) for c in range(512))
+        self._target = None
+        self._fadetime = time.time()
+        self._sceneid = None
+        self._lock = threading.Lock()
         # Load scene 0 by default.
         try:
-            self.loadscene(0)
+            self.loadscene('Default')
         except SceneNotFoundError:
             _logger.warning('Unable to load default scene, all channels set to zero')
+        # Start the scene transition task
+        threading.Thread(target=self._fader).start()
