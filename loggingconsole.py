@@ -22,8 +22,8 @@ class LoggingConsole(console.Console):
     def _channellogger(self):
         while True:
             time.sleep(self._polldelay)
-            values = (int(v) for c, v in self._channels.items() if int(c) <= self._maxchannels)
-            valuesstr = ' '.join('{0:03}'.format(v) for v in values)
+            values = (v for c, v in self._channels.items() if int(c) <= self._maxchannels)
+            valuesstr = ' '.join('{0:5.1f}'.format(v) for v in values)
             _logger.info(valuesstr)
 
     def __init__(self, parameter):
