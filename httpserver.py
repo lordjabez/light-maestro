@@ -48,6 +48,16 @@ def _postchannelsload():
         bottle.abort(503, 'Unable to communicate with console')
 
 
+@bottle.get('/scenes')
+def _getscenes():
+    try:
+        return _Console.console.getscenes()
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
 @bottle.get('/scenes/<sceneid>')
 def _getscene(sceneid):
     try:

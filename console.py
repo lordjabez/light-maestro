@@ -40,8 +40,11 @@ class CommunicationError(Exception):
 class Console():
     """Abstract class from which all other console classes inherit."""
 
+    def _getscenepath(self):
+        return 'scenes'
+
     def _getscenefilename(self, sceneid):
-        return os.path.join('scenes', sceneid)
+        return os.path.join(self._getscenepath(), sceneid)
 
     def getstatus(self):
         """
@@ -67,6 +70,12 @@ class Console():
             self._target = data.get('channels', {})
             self._fadetime = time.time() + data.get('fade', 0.0)
             self._sceneid = sceneid
+
+    def getscenes(self):
+        try:
+            return {'scenes': sorted(os.listdir(self._getscenepath()))}
+        except OSError:
+            raise CommunicationError
 
     def getscene(self, sceneid):
         try:
