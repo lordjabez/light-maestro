@@ -27,6 +27,11 @@ class SceneNotFoundError(Exception):
     pass
 
 
+class NotSupportedError(Exception):
+    """Console does not support this function."""
+    pass
+
+
 class CommunicationError(Exception):
     """Communication with the console failed."""
     pass

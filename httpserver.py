@@ -31,6 +31,8 @@ def _getstatus():
 def _getchannels():
     try:
         return _Console.console.getchannels()
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 
@@ -40,6 +42,8 @@ def _postchannelsload():
     try:
         _Console.console.loadchannels(bottle.request.json)
         bottle.response.status = 202
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 
@@ -50,6 +54,8 @@ def _getscene(sceneid):
         return _Console.console.getscene(sceneid)
     except console.SceneNotFoundError:
         bottle.abort(404, 'Scene "{0}" not found'.format(sceneid))
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 
@@ -58,6 +64,8 @@ def _getscene(sceneid):
 def _putscene(sceneid):
     try:
         _Console.console.savescene(sceneid, bottle.request.json)
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 
@@ -66,6 +74,8 @@ def _putscene(sceneid):
 def _deletescene(sceneid):
     try:
         _Console.console.deletescene(sceneid)
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 
@@ -79,6 +89,8 @@ def _postsceneload(sceneid):
         bottle.response.status = 200
     except console.SceneNotFoundError:
         bottle.abort(404, 'Scene "{0}" not found'.format(sceneid))
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 
@@ -87,6 +99,8 @@ def _postsceneload(sceneid):
 def _postscenesave(sceneid):
     try:
         _Console.console.savescene(sceneid)
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 
@@ -99,6 +113,7 @@ def _getfile(filename='index.html'):
 
 @bottle.error(404)
 @bottle.error(500)
+@bottle.error(501)
 @bottle.error(503)
 def _returnerror(error):
     """

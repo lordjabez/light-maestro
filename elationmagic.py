@@ -34,16 +34,28 @@ class ElationMagic(console.Console):
         Provide status information for the connection to the console.
         @return: Dictionary containing status information
         """
-        condition = 'operational' if self._midi else 'nonoperational'
-        return {'condition': condition}
+        status = super().getstatus()
+        status['condition'] = 'operational' if self._midi else 'nonoperational'
+        return status
+
+    def getchannels(self, sceneid):
+        raise console.NotSupportedError
+
+    def loadchannels(self, data, sceneid=None):
+        raise console.NotSupportedError
+
+    def getscene(self, sceneid):
+        raise console.NotSupportedError
 
     def loadscene(self, sceneid):
-        """
-        Load the current scene
-        @param sceneid: Scene identifier to load
-        """
         channel, note = divmod(int(sceneid), 72)
         self._sendmidi(channel, note)
+
+    def savescene(self, sceneid, scene=None):
+        raise console.NotSupportedError
+
+    def deletescene(self, sceneid):
+        raise console.NotSupportedError
 
     def __init__(self):
         self._midi = rtmidi.MidiOut()
