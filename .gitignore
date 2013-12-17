@@ -37,6 +37,3 @@ nosetests.xml
 
 # PyCharm
 .idea
-
-# Wave trigger files
-*.wav
