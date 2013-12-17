@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 lightmaestro.py -c ElationMagic
+python3 lightmaestro.py --debug
