@@ -9,6 +9,7 @@ import collections
 import json
 import logging
 import os
+import re
 import threading
 import time
 
@@ -37,14 +38,18 @@ class CommunicationError(Exception):
     pass
 
 
+def _alphasort(items):
+    """ Sort the given list in the way that humans expect."""
+    convert = lambda t: int(t) if t.isdigit() else t
+    alphakey = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(items, key=alphakey)
+
+
 class Console():
     """Abstract class from which all other console classes inherit."""
 
-    def _getscenepath(self):
-        return 'scenes'
-
     def _getscenefilename(self, sceneid):
-        return os.path.join(self._getscenepath(), sceneid)
+        return os.path.join(self._scenepath, sceneid)
 
     def getstatus(self):
         """
@@ -73,7 +78,7 @@ class Console():
 
     def getscenes(self):
         try:
-            return {'scenes': sorted(os.listdir(self._getscenepath()))}
+            return {'scenes': _alphasort(os.listdir(self._scenepath))}
         except OSError:
             raise CommunicationError
 
@@ -87,10 +92,6 @@ class Console():
             raise CommunicationError
 
     def loadscene(self, sceneid):
-        """
-        Set the current scene.
-        @param scene: Dictionary containing the scene identifier to make current
-        """
         if self._sceneid == sceneid:
             raise SceneAlreadyLoadedError
         scene = self.getscene(sceneid)
@@ -135,7 +136,7 @@ class Console():
                         self._setchannels(self._target)
                         self._target = None
 
-    def __init__(self, parameter=None):
+    def __init__(self, parameter='scenes'):
         """Initialize the console object."""
         # Set up the channel value dictionary.
         self._channels = collections.OrderedDict((str(c+1), 0.0) for c in range(512))
@@ -143,6 +144,7 @@ class Console():
         self._fadetime = time.time()
         self._sceneid = None
         self._lock = threading.Lock()
+        self._scenepath = parameter
         # Load scene 0 by default.
         try:
             self.loadscene('Default')

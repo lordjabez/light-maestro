@@ -17,7 +17,7 @@ _logger = logging.getLogger(__name__)
 
 
 class LoggingConsole(console.Console):
-    """Provide a generic console class that's useful for deubgging."""
+    """Provide a generic console class that's useful for debugging."""
 
     def _channellogger(self):
         while True:

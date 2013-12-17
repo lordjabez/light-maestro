@@ -38,7 +38,7 @@ class ElationMagic(console.Console):
         status['condition'] = 'operational' if self._midi else 'nonoperational'
         return status
 
-    def getchannels(self, sceneid):
+    def getchannels(self):
         raise console.NotSupportedError
 
     def loadchannels(self, data, sceneid=None):

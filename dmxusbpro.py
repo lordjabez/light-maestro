@@ -5,8 +5,6 @@
 
 # Standard library imports
 import logging
-import threading
-import time
 
 # Additional library imports
 import serial
@@ -46,7 +44,7 @@ class DmxUsbPro(console.Console):
                 self._portavailable = True
                 _logger.info('Opened port {0}'.format(self._port.name))
         try:
-            self._port.write(DMX_HEADER + self._universe[1:] + DMX_FOOTER)
+            self._port.write(DMX_HEADER + bytes(self._universe[1:]) + DMX_FOOTER)
         except IOError:
             _logger.warning('Could not write to port {0}'.format(self._port.name))
             self._port.close()
