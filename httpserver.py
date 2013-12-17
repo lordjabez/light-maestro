@@ -33,15 +33,17 @@ def _getstatus():
     return _Console.console.getstatus()
 
 
-@bottle.get('/console')
-def _getconsole():
-    return _Console.console.getconsole()
+@bottle.get('/channels')
+def _getchannels():
+    return _Console.console.getchannels()
 
 
-@bottle.put('/scenes/_current')
-def _putcurrentscene():
+@bottle.post('/scenes/<sceneid>/_load')
+def _loadscene(sceneid):
     try:
-        _Console.console.setcurrentscene(bottle.request.json)
+        _Console.console.loadscene(sceneid)
+    except console.SceneNotFoundError:
+        bottle.abort(404, 'Scene "{0}" not found'.format(sceneid))
     except console.CommunicationError:
         bottle.abort(503, 'Unable to communicate with console')
 

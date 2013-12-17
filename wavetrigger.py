@@ -57,7 +57,13 @@ def _triggerpoller():
                 _atimes[filename] = os.stat(filename).st_atime
 
                 # Separate the components of the request
-                method, url, data = req[52:].splitlines(False)
+                reqitems = req[52:].splitlines(False)
+                method = reqitems[0].decode()
+                url = reqitems[1].decode()
+                try:
+                    data = reqitems[2].decode()
+                except IndexError:
+                    data = ''
 
                 # Attempt to send the request and log the results
                 _logger.debug('Sending {0} request to {1}'.format(method, url))

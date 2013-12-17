@@ -5,6 +5,7 @@
 
 
 # Standard library imports
+import json
 import logging
 
 
@@ -12,14 +13,14 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class CommunicationError(Exception):
-    """Communication with the console failed."""
+class SceneNotFoundError(Exception):
+    """Missing or corrupt scene file."""
     pass
 
 
-def _getlist(nums):
-    if type(nums) is str:
-        return (int(n) for n in nums.split(','))
+class CommunicationError(Exception):
+    """Communication with the console failed."""
+    pass
 
 
 class Console():
@@ -32,27 +33,40 @@ class Console():
         """
         return {'condition': 'operational'}
 
-    def getconsole(self):
+    def getchannels(self):
         """
-        Provide all console values.
-        @return: Dictionary containing the entire console structure
+        Provide all DMX channel values.
+        @return: Dictionary containing all channel numbers and values
         """
-        return {'show': self._show, 'scene': self._scene}
+        return self._channels
 
-    def setcurrentshow(self, show):
+    def setchannels(self, channels):
         """
-        Set the current show.
-        @param show: Dictionary containing the show identifier to make current
+        Set a collection of channels to particular values
+        @param channels: Dictionary containing the channel numbers and values to update
         """
-        self._show = show
+        self._channels.update(channels)
 
-    def setcurrentscene(self, scene):
+    def loadscene(self, sceneid):
         """
         Set the current scene.
         @param scene: Dictionary containing the scene identifier to make current
         """
-        self._scene = scene
+        scenefile = 'scenes/{0}.json'.format(sceneid)
+        try:
+            with open(scenefile) as f:
+                scene = json.load(f)
+        except (IOError, ValueError):
+            raise SceneNotFoundError
+        self.setchannels(scene.get('channels', {}))
+        _logger.debug('Loading scene {0}'.format(sceneid))
 
     def __init__(self):
-        self._show = None
-        self._scene = None
+        """Initialize the console object."""
+        # Set up the channel value dictionary.
+        self._channels = {str(c+1): 0 for c in range(512)}
+        # Load scene 0 by default.
+        try:
+            self.loadscene(0)
+        except SceneNotFoundError:
+            _logger.warning('Unable to load default scene, all channels set to zero')

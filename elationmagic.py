@@ -37,20 +37,19 @@ class ElationMagic(console.Console):
         condition = 'operational' if self._midi else 'nonoperational'
         return {'condition': condition}
 
-    def setcurrentscene(self, scene):
+    def loadscene(self, sceneid):
         """
-        Set the current scene
-        @param scene: Dictionary containing the scene identifier to make current
+        Load the current scene
+        @param sceneid: Scene identifier to load
         """
-        channel, note = divmod(int(scene['id']), 72)
+        channel, note = divmod(int(sceneid), 72)
         self._sendmidi(channel, note)
 
     def __init__(self):
-        super().__init__()
         self._midi = rtmidi.MidiOut()
         for p, portname in enumerate(self._midi.get_ports()):
             if 'USB' in portname:
                 self._midi.open_port(p)
                 _logger.info('Connected to MIDI device "{0}"'.format(self._midi.get_port_name(p)))
-                return
+                super().__init__()
         _logger.warning('No USB MIDI device found')
