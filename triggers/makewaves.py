@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 
-wavelist = []
-for p in range(48):
-    for s in range(24):
-        wave = {'method': 'PUT', 'url': 'http://localhost:3520/scenes/_current'}
-        wave['name'] = 'P{0:02}-S{1:02}'.format(p + 1, s + 1)
-        wave['data'] = {'id': p * 24 + s}
-        wavelist.append(wave)
 
-import json
 import struct
+
+
+wavelist = []
+for s in range(12):
+    wave = {'method': 'POST'}
+    wave['url'] = 'http://localhost:3520/scenes/{0}/_load'.format(s + 1)
+    wave['name'] = 'Scene {0:02}'.format(s + 1)
+    wave['data'] = ''
+    wavelist.append(wave)
+
 
 for wave in wavelist:
 
-    reqdata = '\n'.join((wave['method'], wave['url'], json.dumps(wave['data'])))
+    reqdata = '\n'.join((wave['method'], wave['url'], wave['data']))
     reqlen = len(reqdata)
     if reqlen % 2 == 1:
         reqdata += '\n'
