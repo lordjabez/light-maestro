@@ -29,10 +29,10 @@ class OpenDmxUsb(console.Console):
         status['framerate'] = self._framerate
         return status
 
-    def setchannels(self, channels):
-        super().setchannels(channels)
+    def _setchannels(self, channels):
+        super()._setchannels(channels)
         for c, v in self._channels.items():
-            self._universe[int(c)] = v
+            self._universe[int(c)] = max(0, min(int(v * 255.0 / 100.0), 255))
 
     def _dmxwriter(self):
         while True:

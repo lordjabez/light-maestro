@@ -106,6 +106,9 @@ class Console():
         except OSError:
             raise CommunicationError
 
+    def _setchannels(self, channels):
+        self._channels.update(channels)
+
     def _fader(self):
         fadedelay = 0.1
         while True:
@@ -114,11 +117,13 @@ class Console():
                 with self._lock:
                     remainingfade = self._fadetime - time.time()
                     if remainingfade > fadedelay:
+                        fadechannels = {}
                         for c, v in self._target.items():
                             delta = (self._target[c] - self._channels[c]) * fadedelay / remainingfade
-                            self._channels[c] += delta
+                            fadechannels[c] = self._channels[c] + delta
+                        self._setchannels(fadechannels)
                     else:
-                        self._channels.update(self._target)
+                        self._setchannels(self._target)
                         self._target = None
 
     def __init__(self, parameter=None):

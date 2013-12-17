@@ -30,10 +30,10 @@ class DmxUsbPro(console.Console):
         status['condition'] = 'operational' if self._portavailable else 'nonoperational'
         return status
 
-    def setchannels(self, channels):
-        super().setchannels(channels)
+    def _setchannels(self, channels):
+        super()._setchannels(channels)
         for c, v in self._channels.items():
-            self._universe[int(c)] = v
+            self._universe[int(c)] = max(0, min(int(v * 255.0 / 100.0), 255))
         if not self._port.isOpen():
             try:
                 self._port.open()
@@ -56,6 +56,6 @@ class DmxUsbPro(console.Console):
         self._universe = bytearray(513)
         self._port = serial.Serial()
         self._baudrate = 115200
-        self._port.port = port
+        self._port.port = parameter
         self._portavailable = False
         super().__init__()
