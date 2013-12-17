@@ -5,6 +5,7 @@
 
 
 # Standard library imports
+import collections
 import json
 import logging
 
@@ -31,7 +32,7 @@ class Console():
         Provide status information for the connection to the console.
         @return: Dictionary containing status information
         """
-        return {'condition': 'operational'}
+        return {'module': self.__class__.__name__.lower(), 'condition': 'operational'}
 
     def getchannels(self):
         """
@@ -61,10 +62,10 @@ class Console():
         self.setchannels(scene.get('channels', {}))
         _logger.debug('Loading scene {0}'.format(sceneid))
 
-    def __init__(self):
+    def __init__(self, parameter=None):
         """Initialize the console object."""
         # Set up the channel value dictionary.
-        self._channels = {str(c+1): 0 for c in range(512)}
+        self._channels = collections.OrderedDict((str(c+1), 0) for c in range(512))
         # Load scene 0 by default.
         try:
             self.loadscene(0)

@@ -23,9 +23,11 @@ class OpenDmxUsb(console.Console):
     """Interface to the Open DMX USB dongle from ENTTEC."""
 
     def getstatus(self):
-        console = __class__.__name__
-        condition = 'operational' if self._portavailable else 'nonoperational'
-        return {'console': console, 'condition': condition, 'framecount': self._framecount, 'framerate': self._framerate}
+        status = super().getstatus()
+        status['condition'] = 'operational' if self._portavailable else 'nonoperational'
+        status['framecount'] = self._framecount
+        status['framerate'] = self._framerate
+        return status
 
     def setchannels(self, channels):
         super().setchannels(channels)
@@ -66,10 +68,10 @@ class OpenDmxUsb(console.Console):
             self._framerate = sum(lastcounts) / float(numcounts)
             time.sleep(1.0)
 
-    def __init__(self, port):
+    def __init__(self, parameter):
         self._universe = bytearray(513)
         self._port = serial.Serial()
-        self._port.port = port
+        self._port.port = parameter
         self._port.baudrate = 250000
         self._port.stopbits = 2
         self._portavailable = False

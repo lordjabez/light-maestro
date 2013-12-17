@@ -26,9 +26,9 @@ class DmxUsbPro(console.Console):
     """Interface to ENTTEC DMX USB Pro compatible devices."""
 
     def getstatus(self):
-        console = __class__.__name__
-        condition = 'operational' if self._portavailable else 'nonoperational'
-        return {'console': console, 'condition': condition}
+        status = super().getstatus()
+        status['condition'] = 'operational' if self._portavailable else 'nonoperational'
+        return status
 
     def setchannels(self, channels):
         super().setchannels(channels)
@@ -52,7 +52,7 @@ class DmxUsbPro(console.Console):
             self._port.close()
             return
 
-    def __init__(self, port):
+    def __init__(self, parameter):
         self._universe = bytearray(513)
         self._port = serial.Serial()
         self._baudrate = 115200
