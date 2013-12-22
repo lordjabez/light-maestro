@@ -51,8 +51,11 @@ class ElationMagic(console.Console):
         raise console.NotSupportedError
 
     def loadscene(self, sceneid):
-        channel, note = divmod(int(sceneid), 72)
-        self._sendmidi(channel, note)
+        try:
+            channel, note = divmod(int(sceneid) - 1, 72)
+            self._sendmidi(channel, note)
+        except ValueError:
+            _logger.warning('Non-numeric scenes are not supported.')
 
     def savescene(self, sceneid, scene=None):
         raise console.NotSupportedError
@@ -60,11 +63,12 @@ class ElationMagic(console.Console):
     def deletescene(self, sceneid):
         raise console.NotSupportedError
 
-    def __init__(self):
+    def __init__(self, parameter):
         self._midi = rtmidi.MidiOut()
         for p, portname in enumerate(self._midi.get_ports()):
             if 'USB' in portname:
                 self._midi.open_port(p)
                 _logger.info('Connected to MIDI device "{0}"'.format(self._midi.get_port_name(p)))
                 super().__init__()
+                return
         _logger.warning('No USB MIDI device found')
