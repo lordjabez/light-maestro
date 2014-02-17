@@ -17,8 +17,8 @@ import console
 _logger = logging.getLogger(__name__)
 
 
-DMX_HEADER = '\x7e\x06\x00\x02'.encode()
-DMX_FOOTER = '\xe7'.encode()
+_dmxheader = bytes([0x7e, 0x06, 0x00, 0x02])
+_dmxfooter = bytes([0xe7])
 
 class DmxUsbPro(console.Console):
     """Interface to ENTTEC DMX USB Pro compatible devices."""
@@ -44,7 +44,7 @@ class DmxUsbPro(console.Console):
                 self._portavailable = True
                 _logger.info('Opened port {0}'.format(self._port.name))
         try:
-            self._port.write(DMX_HEADER + bytes(self._universe[1:]) + DMX_FOOTER)
+            self._port.write(_dmxheader + bytes(self._universe[1:]) + _dmxfooter)
         except IOError:
             _logger.warning('Could not write to port {0}'.format(self._port.name))
             self._port.close()
