@@ -20,6 +20,7 @@ _logger = logging.getLogger(__name__)
 _dmxheader = bytes([0x7e, 0x06, 0x00, 0x02])
 _dmxfooter = bytes([0xe7])
 
+
 class DmxUsbPro(console.Console):
     """Interface to ENTTEC DMX USB Pro compatible devices."""
 
@@ -51,7 +52,7 @@ class DmxUsbPro(console.Console):
             return
 
     def __init__(self, parameter):
-        self._universe = bytearray(513)
+        self._universe = bytearray(129)
         self._port = serial.Serial()
         self._baudrate = 115200
         self._port.port = parameter
