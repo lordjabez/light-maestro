@@ -118,6 +118,7 @@ class Console():
 
     def _setchannels(self, channels):
         self._channels.update(channels)
+        _logger.debug(list(self._channels.values())[:16])
 
     def _fader(self):
         fadedelay = 0.1
