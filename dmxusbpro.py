@@ -17,7 +17,7 @@ import console
 _logger = logging.getLogger(__name__)
 
 
-_dmxheader = bytes([0x7e, 0x06, 0x00, 0x02])
+_dmxheader = bytes([0x7e, 0x06, 0x01, 0x02])
 _dmxfooter = bytes([0xe7])
 
 
@@ -45,14 +45,14 @@ class DmxUsbPro(console.Console):
                 self._portavailable = True
                 _logger.info('Opened port {0}'.format(self._port.name))
         try:
-            self._port.write(_dmxheader + bytes(self._universe[1:]) + _dmxfooter)
+            self._port.write(_dmxheader + self._universe + _dmxfooter)
         except IOError:
             _logger.warning('Could not write to port {0}'.format(self._port.name))
             self._port.close()
             return
 
     def __init__(self, parameter):
-        self._universe = bytearray(129)
+        self._universe = bytearray(513)
         self._port = serial.Serial()
         self._baudrate = 115200
         self._port.port = parameter
