@@ -17,8 +17,8 @@ import console
 _logger = logging.getLogger(__name__)
 
 
-_dmxheader = bytes([0x7e, 0x06])
-_dmxfooter = bytes([0xe7])
+_dmxheader = bytearray([0x7e, 0x06])
+_dmxfooter = bytearray([0xe7])
 
 
 class DmxUsbPro(console.Console):
@@ -57,7 +57,7 @@ class DmxUsbPro(console.Console):
 
     def __init__(self, parameter):
         self._universe = bytearray(console.maxchannels + 1)
-        self._dmxsize = bytes(reversed(divmod(len(self._universe), 256)))
+        self._dmxsize = bytearray(reversed(divmod(len(self._universe), 256)))
         self._port = serial.Serial()
         self._baudrate = 115200
         self._port.port = parameter

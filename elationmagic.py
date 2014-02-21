@@ -63,10 +63,10 @@ class ElationMagic(console.Console):
     def deletescene(self, sceneid):
         raise console.NotSupportedError
 
-    def __init__(self, parameter):
+    def __init__(self, parameter='USB'):
         self._midi = rtmidi.MidiOut()
         for p, portname in enumerate(self._midi.get_ports()):
-            if 'USB' in portname:
+            if parameter in portname:
                 self._midi.open_port(p)
                 _logger.info('Connected to MIDI device "{0}"'.format(self._midi.get_port_name(p)))
                 super().__init__()
