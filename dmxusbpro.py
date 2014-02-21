@@ -32,12 +32,16 @@ class DmxUsbPro(console.Console):
     def _setchannels(self, channels):
         super()._setchannels(channels)
         for c, v in self._channels.items():
-            self._universe[int(c)] = max(0, min(int(v * 255.0 / 100.0), 255))
+            value = max(0, min(int(v * 255.0 / 100.0), 255))
+            try:
+                self._universe[int(c)] = value
+            except IndexError:
+                _logger.warning('Ignoring channel {0}, which is outside of DMX universe max of 512'.format(c))
         if not self._port.isOpen():
             try:
                 self._port.open()
             except IOError:
-                if self._portavailable:
+                if self._portavailable or self._portavailable is None:
                     _logger.error('Unable to open port {0}'.format(self._port.name))
                     self._portavailable = False
                 return
@@ -56,5 +60,5 @@ class DmxUsbPro(console.Console):
         self._port = serial.Serial()
         self._baudrate = 115200
         self._port.port = parameter
-        self._portavailable = False
+        self._portavailable = None
         super().__init__()
