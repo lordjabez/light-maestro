@@ -18,6 +18,10 @@ import time
 _logger = logging.getLogger(__name__)
 
 
+# Maximum number of channels supported
+maxchannels = 128
+
+
 class SceneAlreadyLoadedError(Exception):
     """Requested scene is loading or already loaded."""
     pass
@@ -139,14 +143,12 @@ class Console():
 
     def __init__(self, parameter='scenes'):
         """Initialize the console object."""
-        # Set up the channel value dictionary.
-        self._channels = collections.OrderedDict((str(c+1), 0.0) for c in range(512))
+        self._channels = collections.OrderedDict((str(c+1), 0.0) for c in range(maxchannels))
         self._target = None
         self._fadetime = time.time()
         self._sceneid = None
         self._lock = threading.Lock()
         self._scenepath = parameter
-        # Load scene 0 by default.
         try:
             self.loadscene('Default')
         except SceneNotFoundError:

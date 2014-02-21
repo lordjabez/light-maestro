@@ -17,7 +17,7 @@ import console
 _logger = logging.getLogger(__name__)
 
 
-_dmxheader = bytes([0x7e, 0x06, 0x01, 0x02])
+_dmxheader = bytes([0x7e, 0x06])
 _dmxfooter = bytes([0xe7])
 
 
@@ -36,7 +36,7 @@ class DmxUsbPro(console.Console):
             try:
                 self._universe[int(c)] = value
             except IndexError:
-                _logger.warning('Ignoring channel {0}, which is outside of DMX universe max of 512'.format(c))
+                _logger.warning('Ignoring channel {0} since universe max is {1}'.format(c, console.maxchannels))
         if not self._port.isOpen():
             try:
                 self._port.open()
@@ -49,14 +49,15 @@ class DmxUsbPro(console.Console):
                 self._portavailable = True
                 _logger.info('Opened port {0}'.format(self._port.name))
         try:
-            self._port.write(_dmxheader + self._universe + _dmxfooter)
+            self._port.write(_dmxheader + self._dmxsize + self._universe + _dmxfooter)
         except IOError:
             _logger.warning('Could not write to port {0}'.format(self._port.name))
             self._port.close()
             return
 
     def __init__(self, parameter):
-        self._universe = bytearray(513)
+        self._universe = bytearray(console.maxchannels + 1)
+        self._dmxsize = bytes(reversed(divmod(len(self._universe), 256)))
         self._port = serial.Serial()
         self._baudrate = 115200
         self._port.port = parameter
