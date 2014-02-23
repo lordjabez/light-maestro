@@ -5,6 +5,11 @@
 'use strict';
 
 
+// TODO comments
+// TODO read channel values when picking individual fixture
+// TODO arrange banks
+// TODO add "select all in bank" button? perhaps with double tap or long-press?
+
 function selectFixtures() {
     var type = $(this).html();
     var whitesChecked = type == 'All' || type == 'Whites';
