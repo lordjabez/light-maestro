@@ -27,7 +27,7 @@ function changeValues(event) {
     var channels = {}
     $('input[type="checkbox"]').each( function() {
         if($(this).prop('checked')) {
-           var id = parseInt($(this).attr('id').split('-')[1]);
+           var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3;
            channels[id + 0] = alpha;
            channels[id + 1] = red;
            channels[id + 2] = green;
