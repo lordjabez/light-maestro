@@ -107,8 +107,8 @@ class Console():
             scene = self.getchannels()
         try:
             print(scene)
-            with open(self._getscenefilename(sceneid), 'wb') as f:
-                f.write(json.dumps(scene, indent=4).encode())
+            with open(self._getscenefilename(sceneid), 'w') as f:
+                json.dump(scene, f, indent=4)
         except IOError:
             raise CommunicationError
 
