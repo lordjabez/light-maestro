@@ -22,8 +22,8 @@ _logger = logging.getLogger(__name__)
 maxchannels = 96
 
 
-class SceneAlreadyLoadedError(Exception):
-    """Requested scene is loading or already loaded."""
+class SceneAlreadyChangedError(Exception):
+    """Requested scene is changing or already changed."""
     pass
 
 
@@ -74,10 +74,10 @@ class Console():
         """
         return {'channels': self._channels}
 
-    def loadchannels(self, data, sceneid=None):
+    def loadchannels(self, data, sceneid):
         with self._lock:
             self._target = data.get('channels', {})
-            self._fadetime = time.time() + data.get('fade', 0.0)
+            self._fadetime = time.time() + data.get('fade', 0)
             self._sceneid = sceneid
 
     def getscenes(self):
@@ -95,10 +95,15 @@ class Console():
         except ValueError:
             raise CommunicationError
 
-    def loadscene(self, sceneid):
+    def changescene(self, sceneid):
         if self._sceneid == sceneid:
-            raise SceneAlreadyLoadedError
+            raise SceneAlreadyChangedError
         scene = self.getscene(sceneid)
+        self.loadchannels(scene, sceneid)
+
+    def loadscene(self, sceneid):
+        scene = self.getscene(sceneid)
+        scene.pop('fade', None)
         self.loadchannels(scene, sceneid)
 
     def savescene(self, sceneid, fade=5, scene=None):
