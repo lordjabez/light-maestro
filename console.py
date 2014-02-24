@@ -153,8 +153,8 @@ class Console():
         self._lock = threading.Lock()
         self._scenepath = parameter
         try:
-            self.loadscene('Default')
+            self.changescene('Startup')
         except SceneNotFoundError:
-            _logger.warning('Unable to load default scene, all channels set to zero')
+            _logger.warning('Unable to change to startup scene')
         # Start the scene transition task
         threading.Thread(target=self._fader).start()
