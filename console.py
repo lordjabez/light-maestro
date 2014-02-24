@@ -100,7 +100,6 @@ class Console():
             raise SceneAlreadyLoadedError
         scene = self.getscene(sceneid)
         self.loadchannels(scene, sceneid)
-        _logger.debug('Loading scene {0}'.format(sceneid))
 
     def savescene(self, sceneid, scene=None):
         if scene is None:
