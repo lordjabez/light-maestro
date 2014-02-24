@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 
 
 # Maximum number of channels supported
-maxchannels = 128
+maxchannels = 96
 
 
 class SceneAlreadyLoadedError(Exception):
