@@ -74,7 +74,7 @@ class Console():
         """
         return {'channels': self._channels}
 
-    def loadchannels(self, data, sceneid):
+    def loadchannels(self, data, sceneid=None):
         with self._lock:
             self._target = data.get('channels', {})
             self._fadetime = time.time() + data.get('fade', 0)
