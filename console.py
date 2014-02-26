@@ -106,10 +106,9 @@ class Console():
         scene.pop('fade', None)
         self.loadchannels(scene, sceneid)
 
-    def savescene(self, sceneid, fade=5, scene=None):
+    def savescene(self, sceneid, scene=None):
         if scene is None:
             scene = self.getchannels()
-            scene['fade'] = fade
         try:
             with open(self._getscenefilename(sceneid), 'w') as f:
                 json.dump(scene, f, indent=4)

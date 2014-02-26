@@ -154,7 +154,6 @@ def start(con):
     @param con: The console object into which the interface functions will call.
     """
     _Console.console = con
-    #logging.getLogger('Rocket').setLevel(logging.WARNING)
     kwargs = {'host': '0.0.0.0', 'port': 3520, 'debug': False, 'quiet': True}
     threading.Thread(target=bottle.run, kwargs=kwargs).start()
 
