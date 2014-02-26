@@ -1,3 +1,7 @@
+# Special for light-maestro
+triggers
+scenes
+
 *.py[cod]
 
 # C extensions
