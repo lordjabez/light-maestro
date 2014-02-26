@@ -34,6 +34,8 @@
 
     <div data-role="content">
 
+        <div class="fixture-layout">
+
         <div class="ui-grid-c">
 
             <div class="ui-block-a"></div>
@@ -88,22 +90,29 @@
 
         </div>
 
-        <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false">
+        </div>
+
+        <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false" class="fixture-selectors">
             <button id="select-all" data-mini="true">All</button>
             <button id="select-white" data-mini="true">Whites</button>
             <button id="select-colors" data-mini="true">Colors</button>
             <button id="select-none" data-mini="true">None</button>
         </fieldset>
 
-        <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false">
-            <button id="scene-save" data-mini="true">Save Scene</button>
+        <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false" class="scene-controls"> <!-- TODO error reporting -->
+            <button id="scene-save" data-mini="true">Save Scene</button> <!-- TODO overwrite confirmation -->
             <button id="scene-load" data-mini="true">Load Scene</button>
+            <button id="scene-change" data-mini="true">Change Scene</button>
         </fieldset>
+        <input type="text" id="scene-name" value="My Scene" data-mini="true"/>  <!-- TODO provide dropdown of existing scenes -->
+        <input type="number" id="scene-fade" value="5" data-mini="true"/>
 
-        <input type="range" id="value-alpha" value="0" min="0" max="100" data-highlight="true"/>
-        <input type="range" id="value-red" value="0" min="0" max="100" data-highlight="true"/>
-        <input type="range" id="value-green" value="0" min="0" max="100" data-highlight="true"/>
-        <input type="range" id="value-blue" value="0" min="0" max="100" data-highlight="true"/>
+        <div class="value-sliders">
+            <input type="range" id="value-alpha" value="0" min="0" max="100" data-highlight="true"/>
+            <input type="range" id="value-red" value="0" min="0" max="100" data-highlight="true"/>
+            <input type="range" id="value-green" value="0" min="0" max="100" data-highlight="true"/>
+            <input type="range" id="value-blue" value="0" min="0" max="100" data-highlight="true"/>
+        </div>
 
     </div>
 

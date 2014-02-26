@@ -87,8 +87,21 @@ function changeValues(event) {
            channels[id + offset] = value
        }
     });
-    var jsonData = JSON.stringify({'channels': channels})
-    $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: jsonData})
+    var data = JSON.stringify({'channels': channels})
+    $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data})
+}
+
+function controlScene(event) {
+    var command = event.target.id
+    var sceneid = $('#scene-name').val()
+    var fade = parseInt($('#scene-fade').val())
+    var url = '/scenes/' + sceneid
+    var data = JSON.stringify({'channels': channels, 'fade': fade})
+    switch(command) {
+        case 'scene-save': $.ajax({method: 'PUT', url: url, headers: JSON_HEADER, data: data}); break
+        case 'scene-load': $.ajax({method: 'POST', url: url + '/_load'}); break
+        case 'scene-change': $.ajax({method: 'POST', url: url + '/_change'}); break
+    }
 }
 
 // Things to do before the page is shown.
@@ -100,10 +113,13 @@ $(document).bind('pagebeforeshow', function() {
     });
 
     // Bind the select fixture function to selection buttons.
-    $('button').bind('tap', selectFixtures)
+    $('.fixture-selectors button').bind('tap', selectFixtures)
+
+    // Bind the save/load/change scene buttons.
+    $('.scene-controls button').bind('tap', controlScene)
 
     // Bind the change value function to the sliders.
-    $('[id|="value"]').bind('change', changeValues)
+    $('.value-sliders').bind('change', changeValues)
 
     // Set up channel poller.
     setInterval(pollChannels, 250)
