@@ -155,9 +155,5 @@ class Console():
         self._sceneid = None
         self._lock = threading.Lock()
         self._scenepath = parameter
-        try:
-            self.changescene('Startup')
-        except SceneNotFoundError:
-            _logger.warning('Unable to change to startup scene')
         # Start the scene transition task
         threading.Thread(target=self._fader).start()
