@@ -8,6 +8,7 @@
 import collections
 import logging
 import os
+import struct
 import threading
 import time
 
@@ -31,7 +32,8 @@ _session.headers['Content-Type'] = 'application/json'
 _atimes = collections.defaultdict(time.time)
 
 
-def _triggerpoller():
+def _triggerpoller(host):
+    """TODO"""
 
     # Poll the list of files forever
     while True:
@@ -59,7 +61,7 @@ def _triggerpoller():
                 # Separate the components of the request
                 reqitems = req[52:].splitlines(False)
                 method = reqitems[0].decode()
-                url = reqitems[1].decode()
+                url = 'http://{0}:3520{1}'.format(host, reqitems[1].decode())
                 try:
                     data = reqitems[2].decode()
                 except IndexError:
@@ -74,7 +76,8 @@ def _triggerpoller():
                     _logger.warning('Unable to contact {0}'.format(url))
 
 
-def writewave(method, url, name, data)
+def writewave(method, url, name, data):
+    """TODO"""
 
     req_data = '\n'.join((method, url, data))
     req_len = len(req_data)
@@ -93,6 +96,11 @@ def writewave(method, url, name, data)
         f.write(riff_chunk + fmt_chunk + data_chunk + req_chunk)
 
 
-def start():
+def writescenechangewave(name):
+    """TODO"""
+    writewave('POST', '/scenes/{0}/_change'.format(name), name, '')
+
+
+def start(host):
     """Initializes the module."""
-    threading.Thread(target=_triggerpoller).start()
+    threading.Thread(target=_triggerpoller, args=[host]).start()

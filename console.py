@@ -13,6 +13,9 @@ import re
 import threading
 import time
 
+# Application imports
+import wavetrigger
+
 
 # Named logger for this module
 _logger = logging.getLogger(__name__)
@@ -53,7 +56,7 @@ class Console():
     """Abstract class from which all other console classes inherit."""
 
     def _getscenefilename(self, sceneid):
-        return os.path.join(self._scenepath, sceneid)
+        return os.path.join(self._scenepath, sceneid + '.json')
 
     def getstatus(self):
         """
@@ -112,6 +115,7 @@ class Console():
         try:
             with open(self._getscenefilename(sceneid), 'w') as f:
                 json.dump(scene, f, indent=4)
+            wavetrigger.writescenechangewave(sceneid)
         except IOError:
             raise CommunicationError
 
