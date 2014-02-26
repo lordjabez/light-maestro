@@ -74,6 +74,25 @@ def _triggerpoller():
                     _logger.warning('Unable to contact {0}'.format(url))
 
 
+def writewave(method, url, name, data)
+
+    req_data = '\n'.join((method, url, data))
+    req_len = len(req_data)
+    if req_len % 2 == 1:
+        req_data += '\n'
+        req_len += 1
+
+    file_len = 36 + 8 + req_len
+
+    riff_chunk = struct.pack('<4sL4s', 'RIFF'.encode(), file_len, 'WAVE'.encode())
+    fmt_chunk = struct.pack('<4sL2H2L2H', 'fmt '.encode(), 16, 1, 1, 22050, 44100, 2, 16)
+    data_chunk = struct.pack('<4sL', 'data'.encode(), 0)
+    req_chunk = struct.pack('<4sL', 'req '.encode(), req_len) + req_data.encode()
+
+    with open('triggers/' + name + '.wav', 'wb') as f:
+        f.write(riff_chunk + fmt_chunk + data_chunk + req_chunk)
+
+
 def start():
     """Initializes the module."""
     threading.Thread(target=_triggerpoller).start()
