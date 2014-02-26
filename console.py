@@ -114,7 +114,7 @@ class Console():
             scene = self.getchannels()
         try:
             with open(self._getscenefilename(sceneid), 'w') as f:
-                json.dump(scene, f, indent=4)
+                json.dump(scene, f, indent=4, sort_keys=True)
             wavetrigger.writescenechangewave(sceneid)
         except IOError:
             raise CommunicationError
