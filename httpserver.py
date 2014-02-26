@@ -90,12 +90,25 @@ def _deletescene(sceneid):
         bottle.abort(503, 'Unable to communicate with console')
 
 
+@bottle.post('/scenes/<sceneid>/_change')
+def _postscenechange(sceneid):
+    try:
+        _Console.console.changescene(sceneid)
+        bottle.response.status = 202
+    except console.SceneAlreadyChangedError:
+        bottle.response.status = 200
+    except console.SceneNotFoundError:
+        bottle.abort(404, 'Scene "{0}" not found'.format(sceneid))
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
 @bottle.post('/scenes/<sceneid>/_load')
 def _postsceneload(sceneid):
     try:
         _Console.console.loadscene(sceneid)
-        bottle.response.status = 202
-    except console.SceneAlreadyLoadedError:
         bottle.response.status = 200
     except console.SceneNotFoundError:
         bottle.abort(404, 'Scene "{0}" not found'.format(sceneid))

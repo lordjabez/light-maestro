@@ -19,11 +19,11 @@ _logger = logging.getLogger(__name__)
 
 
 # Maximum number of channels supported
-maxchannels = 128
+maxchannels = 96
 
 
-class SceneAlreadyLoadedError(Exception):
-    """Requested scene is loading or already loaded."""
+class SceneAlreadyChangedError(Exception):
+    """Requested scene is changing or already changed."""
     pass
 
 
@@ -77,7 +77,7 @@ class Console():
     def loadchannels(self, data, sceneid=None):
         with self._lock:
             self._target = data.get('channels', {})
-            self._fadetime = time.time() + data.get('fade', 0.0)
+            self._fadetime = time.time() + data.get('fade', 0)
             self._sceneid = sceneid
 
     def getscenes(self):
@@ -95,18 +95,22 @@ class Console():
         except ValueError:
             raise CommunicationError
 
-    def loadscene(self, sceneid):
+    def changescene(self, sceneid):
         if self._sceneid == sceneid:
-            raise SceneAlreadyLoadedError
+            raise SceneAlreadyChangedError
         scene = self.getscene(sceneid)
         self.loadchannels(scene, sceneid)
-        _logger.debug('Loading scene {0}'.format(sceneid))
 
-    def savescene(self, sceneid, scene=None):
+    def loadscene(self, sceneid):
+        scene = self.getscene(sceneid)
+        scene.pop('fade', None)
+        self.loadchannels(scene, sceneid)
+
+    def savescene(self, sceneid, fade=5, scene=None):
         if scene is None:
             scene = self.getchannels()
+            scene['fade'] = fade
         try:
-            print(scene)
             with open(self._getscenefilename(sceneid), 'w') as f:
                 json.dump(scene, f, indent=4)
         except IOError:
@@ -122,7 +126,6 @@ class Console():
 
     def _setchannels(self, channels):
         self._channels.update(channels)
-        _logger.debug(list(self._channels.values())[:16])
 
     def _fader(self):
         fadedelay = 0.1
@@ -150,8 +153,8 @@ class Console():
         self._lock = threading.Lock()
         self._scenepath = parameter
         try:
-            self.loadscene('Default')
+            self.changescene('Startup')
         except SceneNotFoundError:
-            _logger.warning('Unable to load default scene, all channels set to zero')
+            _logger.warning('Unable to change to startup scene')
         # Start the scene transition task
         threading.Thread(target=self._fader).start()

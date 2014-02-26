@@ -57,7 +57,7 @@ class ElationMagic(console.Console):
         except ValueError:
             _logger.warning('Non-numeric scenes are not supported.')
 
-    def savescene(self, sceneid, scene=None):
+    def savescene(self, sceneid, fade=5, scene=None):
         raise console.NotSupportedError
 
     def deletescene(self, sceneid):
