@@ -150,7 +150,7 @@ class Console():
     def __init__(self, parameter='scenes'):
         """Initialize the console object."""
         self._channels = collections.OrderedDict((str(c+1), 0.0) for c in range(maxchannels))
-        self._target = None
+        self._target = self._channels
         self._fadetime = time.time()
         self._sceneid = None
         self._lock = threading.Lock()
