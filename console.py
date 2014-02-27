@@ -85,7 +85,9 @@ class Console():
 
     def getscenes(self):
         try:
-            return {'scenes': _alphasort(os.listdir(self._scenepath))}
+            scenelist = _alphasort(os.listdir(self._scenepath))
+            scenelist = map(lambda s: os.path.splitext(s)[0], scenelist)
+            return {'scenes': list(scenelist)}
         except OSError:
             raise CommunicationError
 
