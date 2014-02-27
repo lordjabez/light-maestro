@@ -63,6 +63,16 @@ function setChannels(data) {
     colorFixtures()
 }
 
+function selectFixture() {
+    if($(this).prop('checked')) {
+        var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
+        $('#value-alpha').val(channels[id + 0]).slider('refresh')
+        $('#value-red').val(channels[id + 1]).slider('refresh')
+        $('#value-green').val(channels[id + 2]).slider('refresh')
+        $('#value-blue').val(channels[id + 3]).slider('refresh')
+    }
+}
+
 function selectFixtures() {
     var type = $(this).html()
     var whitesChecked = type == 'All' || type == 'Whites'
@@ -70,9 +80,23 @@ function selectFixtures() {
     $('input[class="fixture-white"]').prop('checked', whitesChecked)
     $('input[class="fixture-color"]').prop('checked', colorsChecked)
     $('input[type="checkbox"]').checkboxradio('refresh')
+    $('.fixture-layout input[type="checkbox"]').each( function() {
+        if($(this).prop('checked')) {
+            var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
+            $('#value-alpha').val(channels[id + 0]).slider('refresh')
+            $('#value-red').val(channels[id + 1]).slider('refresh')
+            $('#value-green').val(channels[id + 2]).slider('refresh')
+            $('#value-blue').val(channels[id + 3]).slider('refresh')
+        }
+    });
 }
 
+var sliding = false
+
 function changeValues(event) {
+    if (!sliding) {
+        return
+    }
     var channel = event.target.id
     switch (channel) {
         case 'value-alpha': var offset = 0; break
@@ -81,7 +105,7 @@ function changeValues(event) {
         case 'value-blue': var offset = 3; break
     }
     var value = parseFloat($('#' + channel).val())
-    $('input[type="checkbox"]').each( function() {
+    $('.fixture-layout input[type="checkbox"]').each( function() {
         if($(this).prop('checked')) {
            var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
            channels[id + offset] = value
@@ -112,14 +136,19 @@ $(document).bind('pagebeforeshow', function() {
         return false
     });
 
-    // Bind the select fixture function to selection buttons.
-    $('.fixture-selectors button').bind('tap', selectFixtures)
+    // Bind a handler to each fixture click.
+    $('input[type=checkbox]').bind('click', selectFixture)
+
+    // Bind the select fixture functions to selection buttons.
+    $('.fixture-selectors button').bind('click', selectFixtures)
 
     // Bind the save/load/change scene buttons.
-    $('.scene-controls button').bind('tap', controlScene)
+    $('.scene-controls button').bind('click', controlScene)
 
     // Bind the change value function to the sliders.
+    $('.value-sliders').bind('slidestart', function() { sliding = true })
     $('.value-sliders').bind('change', changeValues)
+    $('.value-sliders').bind('slidestop', function() { sliding = false })
 
     // Set up channel poller.
     setInterval(pollChannels, 250)
