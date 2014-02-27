@@ -9,6 +9,7 @@ var JSON_HEADER = {'content-type': 'application/json'}
 
 
 var channels = {}
+var scenes = {}
 
 function toHex(n) {
     var prefix = n < 16 ? '0' : ''
@@ -93,6 +94,14 @@ function selectFixtures() {
 
 var sliding = false
 
+function startSlide() {
+    sliding = true
+}
+
+function stopSlide() {
+    sliding = false
+}
+
 function changeValues(event) {
     if (!sliding) {
         return
@@ -146,12 +155,15 @@ $(document).bind('pagebeforeshow', function() {
     $('.scene-controls button').bind('click', controlScene)
 
     // Bind the change value function to the sliders.
-    $('.value-sliders').bind('slidestart', function() { sliding = true })
+    $('.value-sliders').bind('slidestart', startSlide)
     $('.value-sliders').bind('change', changeValues)
-    $('.value-sliders').bind('slidestop', function() { sliding = false })
+    $('.value-sliders').bind('slidestop', stopSlide)
+
+    // Grab the list of scenes
+    pollScenes()
 
     // Set up channel poller.
-    setInterval(pollChannels, 250)
+    setInterval(pollChannels, 500)
 
 });
 
