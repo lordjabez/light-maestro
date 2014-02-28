@@ -107,10 +107,9 @@
         <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false" id="scene-controls"> <!-- TODO error reporting -->
             <button id="scene-save" data-mini="true">Save Scene</button> <!-- TODO overwrite confirmation -->
             <button id="scene-load" data-mini="true">Load Scene</button>
-            <button id="scene-change" data-mini="true">Change Scene</button>
         </fieldset>
-        <input type="text" id="scene-name" value="My Scene" data-mini="true"/>  <!-- TODO provide dropdown of existing scenes -->
-        <input type="number" id="scene-fade" value="5" data-mini="true"/>
+        <input type="text" id="scene-name" value="My Scene" data-mini="true"/>  <!-- move these two to a dialog -->
+        <input type="number" id="scene-fade" value="5" data-mini="true"/> <!-- TODO also add description and thumbnail -->
 
         <div id="value-sliders">
             <input type="range" id="value-alpha" value="0" min="0" max="100" data-highlight="true"/>
