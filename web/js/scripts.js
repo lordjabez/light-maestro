@@ -55,6 +55,14 @@ function colorFixtures() {
     }
 }
 
+function pollScenes() {
+    $.ajax({method: 'GET', url: '/scenes', success: setScenes})
+}
+
+function setScenes(data) {
+    scenes = data['scenes']
+}
+
 function pollChannels() {
     $.ajax({method: 'GET', url: '/channels', success: setChannels})
 }
