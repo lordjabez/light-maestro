@@ -75,7 +75,7 @@ class Console():
         Provide all DMX channel values.
         @return: Dictionary containing all channel numbers and values
         """
-        return {'channels': self._channels}
+        return self._channels
 
     def loadchannels(self, data, sceneid=None):
         with self._lock:
@@ -87,7 +87,7 @@ class Console():
         try:
             scenelist = _alphasort(os.listdir(self._scenepath))
             scenelist = map(lambda s: os.path.splitext(s)[0], scenelist)
-            return {'scenes': list(scenelist)}
+            return list(scenelist)
         except OSError:
             raise CommunicationError
 
