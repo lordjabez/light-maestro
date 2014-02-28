@@ -120,6 +120,7 @@ class Console():
             wavetrigger.writescenechangewave(sceneid)
         except IOError:
             raise CommunicationError
+        self._sceneid = sceneid
 
     def deletescene(self, sceneid):
         try:
