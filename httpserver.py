@@ -130,7 +130,7 @@ def _postscenesave(sceneid):
 
 @bottle.get('/')
 @bottle.get('/<filename:path>')
-def _getfile(filename='index.html'):
+def _getfile(filename='scenes.html'):
     return bottle.static_file(filename, root='web')
 
 
