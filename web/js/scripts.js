@@ -8,8 +8,9 @@
 var JSON_HEADER = {'content-type': 'application/json'}
 
 
+var status = {}
 var channels = {}
-var scenes = {}
+var scenes = []
 
 function toHex(n) {
     var prefix = n < 16 ? '0' : ''
@@ -39,12 +40,12 @@ function getWhite(a, y, b) {
 }
 
 function colorFixtures() {
-    for(var f = 1; f <= 24; f++) {
+    for (var f = 1; f <= 24; f++) {
         var a = channels[f * 4 - 3]
         var r = channels[f * 4 - 2]
         var g = channels[f * 4 - 1]
         var b = channels[f * 4 - 0]
-        if($.inArray(f, [1, 3, 4, 6, 8, 9, 11, 13, 15, 16]) != -1) {
+        if ($.inArray(f, [1, 3, 4, 6, 8, 9, 11, 13, 15, 16]) != -1) {
             var color = getWhite(a, r, g)
         }
         else {
@@ -55,25 +56,29 @@ function colorFixtures() {
     }
 }
 
-function pollScenes() {
-    $.ajax({method: 'GET', url: '/scenes', success: setScenes})
+function pollData() {
+    $.ajax({method: 'GET', url: '/data', success: setData})
 }
 
-function setScenes(data) {
-    scenes = data['scenes']
-}
-
-function pollChannels() {
-    $.ajax({method: 'GET', url: '/channels', success: setChannels})
-}
-
-function setChannels(data) {
-    channels = data['channels']
-    colorFixtures()
+function setData(data) {
+    if (channels != data.channels) {
+        channels = data.channels
+        colorFixtures()
+    }
+    if (scenes != data.scenes) {
+        scenes = data.scenes
+        var html = ''
+        for (var s = 0; s < scenes.length; s++) {
+            var highlight = scenes[s] == data.status.scene ? 'class=" ui-btn-active"' : ''
+            html += '<li data-icon="false"' + highlight + '><a class="scene-item">' + data.scenes[s] + '</a></li>'
+        }
+        $('#scene-list').html(html).listview('refresh')
+        $('#scene-list a').unbind().bind('click', changeScene)
+    }
 }
 
 function selectFixture() {
-    if($(this).prop('checked')) {
+    if ($(this).prop('checked')) {
         var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
         $('#value-alpha').val(channels[id + 0]).slider('refresh')
         $('#value-red').val(channels[id + 1]).slider('refresh')
@@ -88,9 +93,9 @@ function selectFixtures() {
     var colorsChecked = type == 'All' || type == 'Colors'
     $('input[class="fixture-white"]').prop('checked', whitesChecked)
     $('input[class="fixture-color"]').prop('checked', colorsChecked)
-    $('input[type="checkbox"]').checkboxradio('refresh')
-    $('.fixture-layout input[type="checkbox"]').each( function() {
-        if($(this).prop('checked')) {
+    $('#fixture-layout input').checkboxradio('refresh')
+    $('#fixture-layout input').each( function() {
+        if ($(this).prop('checked')) {
             var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
             $('#value-alpha').val(channels[id + 0]).slider('refresh')
             $('#value-red').val(channels[id + 1]).slider('refresh')
@@ -123,7 +128,7 @@ function changeValues(event) {
     }
     var value = parseFloat($('#' + channel).val())
     $('.fixture-layout input[type="checkbox"]').each( function() {
-        if($(this).prop('checked')) {
+        if ($(this).prop('checked')) {
            var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
            channels[id + offset] = value
        }
@@ -145,33 +150,41 @@ function controlScene(event) {
     }
 }
 
+function changeScene(event) {
+    var sceneid = $(this).html()
+    $.ajax({method: 'POST', url: '/scenes/' + sceneid + '/_change'})
+}
+
+var dataPoller
+
 // Things to do before the page is shown.
 $(document).bind('pagebeforeshow', function() {
 
     // Disable any ability to select text in the GUI.
-    $('body').bind('selectstart', function() {
+    $('body').unbind().bind('selectstart', function() {
         return false
     });
 
+    // Bind a handler for scene selection.
+    $('.scene-item').unbind().bind('click', changeScene)
+
     // Bind a handler to each fixture click.
-    $('input[type=checkbox]').bind('click', selectFixture)
+    $('#fixture-layout input').unbind().bind('click', selectFixture)
 
     // Bind the select fixture functions to selection buttons.
-    $('.fixture-selectors button').bind('click', selectFixtures)
+    $('#fixture-selectors button').unbind().bind('click', selectFixtures)
 
     // Bind the save/load/change scene buttons.
-    $('.scene-controls button').bind('click', controlScene)
+    $('#scene-controls button').unbind().bind('click', controlScene)
 
     // Bind the change value function to the sliders.
-    $('.value-sliders').bind('slidestart', startSlide)
-    $('.value-sliders').bind('change', changeValues)
-    $('.value-sliders').bind('slidestop', stopSlide)
+    $('#value-sliders').unbind().bind('slidestart', startSlide)
+    $('#value-sliders').unbind().bind('change', changeValues)
+    $('#value-sliders').unbind().bind('slidestop', stopSlide)
 
-    // Grab the list of scenes
-    pollScenes()
-
-    // Set up channel poller.
-    setInterval(pollChannels, 500)
+    // Set up the data poller.
+    clearInterval(dataPoller)
+    dataPoller = setInterval(pollData, 500)
 
 });
 
