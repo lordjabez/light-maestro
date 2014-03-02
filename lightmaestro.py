@@ -18,7 +18,7 @@ import wavetrigger
 _parser = argparse.ArgumentParser()
 _parser.add_argument('-c', '--console', default='Console', help='console module to use')
 _parser.add_argument('-p', '--parameter', default='/dev/ttyUSB0', help='parameter for console module')
-_parser.add_argument('-w', '--wavetrigger', action='store_true', help='enable wave file triggering')
+_parser.add_argument('-w', '--wavetrigger', default='localhost', help='host for wave file triggering')
 _parser.add_argument('-d', '--debug', action='store_true', help='enable debug logging')
 _args = _parser.parse_args()
 
@@ -33,5 +33,4 @@ Console = getattr(console, _args.console)
 
 # Start the application components
 httpserver.start(Console(_args.parameter))
-if _args.wavetrigger:
-    wavetrigger.start()
+wavetrigger.start(_args.wavetrigger)

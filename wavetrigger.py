@@ -8,6 +8,7 @@
 import collections
 import logging
 import os
+import struct
 import threading
 import time
 
@@ -31,7 +32,8 @@ _session.headers['Content-Type'] = 'application/json'
 _atimes = collections.defaultdict(time.time)
 
 
-def _triggerpoller():
+def _triggerpoller(host):
+    """TODO"""
 
     # Poll the list of files forever
     while True:
@@ -59,7 +61,7 @@ def _triggerpoller():
                 # Separate the components of the request
                 reqitems = req[52:].splitlines(False)
                 method = reqitems[0].decode()
-                url = reqitems[1].decode()
+                url = 'http://{0}:3520{1}'.format(host, reqitems[1].decode())
                 try:
                     data = reqitems[2].decode()
                 except IndexError:
@@ -74,6 +76,31 @@ def _triggerpoller():
                     _logger.warning('Unable to contact {0}'.format(url))
 
 
-def start():
+def writewave(method, url, name, data):
+    """TODO"""
+
+    req_data = '\n'.join((method, url, data))
+    req_len = len(req_data)
+    if req_len % 2 == 1:
+        req_data += '\n'
+        req_len += 1
+
+    file_len = 36 + 8 + req_len
+
+    riff_chunk = struct.pack('<4sL4s', 'RIFF'.encode(), file_len, 'WAVE'.encode())
+    fmt_chunk = struct.pack('<4sL2H2L2H', 'fmt '.encode(), 16, 1, 1, 22050, 44100, 2, 16)
+    data_chunk = struct.pack('<4sL', 'data'.encode(), 0)
+    req_chunk = struct.pack('<4sL', 'req '.encode(), req_len) + req_data.encode()
+
+    with open('triggers/' + name + '.wav', 'wb') as f:
+        f.write(riff_chunk + fmt_chunk + data_chunk + req_chunk)
+
+
+def writescenechangewave(name):
+    """TODO"""
+    writewave('POST', '/scenes/{0}/_change'.format(name), name, '')
+
+
+def start(host):
     """Initializes the module."""
-    threading.Thread(target=_triggerpoller).start()
+    threading.Thread(target=_triggerpoller, args=[host]).start()

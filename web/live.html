@@ -16,7 +16,7 @@
     <link rel="icon" href="icon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="lib/jquery-mobile/jquery.mobile-1.3.2.min.css"/>
 
-    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+    <script src="lib/jquery/jquery-1.11.0.min.js"></script>
     <script src="lib/jquery-mobile/jquery.mobile-1.3.2.min.js"></script>
     <script src="js/scripts.js"></script>
 
@@ -28,13 +28,18 @@
 
 <div data-role="page" data-theme="a">
 
-    <div data-role="header" data-position="fixed">
-        <h1>Light Maestro</h1>
+    <div data-role="header" data-position="fixed" data-id="nav-header">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="scenes.html" data-transition="slide" data-direction="reverse" data-prefetch>Scenes</a></li>
+                <li><a href="live.html" class="ui-btn-active ui-state-persist">Live</a></li>
+            </ul>
+        </div>
     </div>
 
     <div data-role="content">
 
-        <div class="fixture-layout">
+        <div id="fixture-layout">
 
         <div class="ui-grid-c">
 
@@ -92,22 +97,21 @@
 
         </div>
 
-        <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false" class="fixture-selectors">
+        <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false" id="fixture-selectors">
             <button id="select-all" data-mini="true">All</button>
             <button id="select-white" data-mini="true">Whites</button>
             <button id="select-colors" data-mini="true">Colors</button>
             <button id="select-none" data-mini="true">None</button>
         </fieldset>
 
-        <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false" class="scene-controls"> <!-- TODO error reporting -->
+        <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false" id="scene-controls"> <!-- TODO error reporting -->
             <button id="scene-save" data-mini="true">Save Scene</button> <!-- TODO overwrite confirmation -->
             <button id="scene-load" data-mini="true">Load Scene</button>
-            <button id="scene-change" data-mini="true">Change Scene</button>
         </fieldset>
-        <input type="text" id="scene-name" value="My Scene" data-mini="true"/>  <!-- TODO provide dropdown of existing scenes -->
-        <input type="number" id="scene-fade" value="5" data-mini="true"/>
+        <input type="text" id="scene-name" value="My Scene" data-mini="true"/>  <!-- move these two to a dialog -->
+        <input type="number" id="scene-fade" value="5" data-mini="true"/> <!-- TODO also add description and thumbnail -->
 
-        <div class="value-sliders">
+        <div id="value-sliders">
             <input type="range" id="value-alpha" value="0" min="0" max="100" data-highlight="true"/>
             <input type="range" id="value-red" value="0" min="0" max="100" data-highlight="true"/>
             <input type="range" id="value-green" value="0" min="0" max="100" data-highlight="true"/>

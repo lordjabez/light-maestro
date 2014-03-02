@@ -13,6 +13,9 @@ import re
 import threading
 import time
 
+# Application imports
+import wavetrigger
+
 
 # Named logger for this module
 _logger = logging.getLogger(__name__)
@@ -53,7 +56,7 @@ class Console():
     """Abstract class from which all other console classes inherit."""
 
     def _getscenefilename(self, sceneid):
-        return os.path.join(self._scenepath, sceneid)
+        return os.path.join(self._scenepath, sceneid + '.json')
 
     def getstatus(self):
         """
@@ -72,7 +75,7 @@ class Console():
         Provide all DMX channel values.
         @return: Dictionary containing all channel numbers and values
         """
-        return {'channels': self._channels}
+        return self._channels
 
     def loadchannels(self, data, sceneid=None):
         with self._lock:
@@ -82,7 +85,9 @@ class Console():
 
     def getscenes(self):
         try:
-            return {'scenes': _alphasort(os.listdir(self._scenepath))}
+            scenelist = _alphasort(os.listdir(self._scenepath))
+            scenelist = map(lambda s: os.path.splitext(s)[0], scenelist)
+            return list(scenelist)
         except OSError:
             raise CommunicationError
 
@@ -111,9 +116,11 @@ class Console():
             scene = self.getchannels()
         try:
             with open(self._getscenefilename(sceneid), 'w') as f:
-                json.dump(scene, f, indent=4)
+                json.dump(scene, f, indent=4, sort_keys=True)
+            wavetrigger.writescenechangewave(sceneid)
         except IOError:
             raise CommunicationError
+        self._sceneid = sceneid
 
     def deletescene(self, sceneid):
         try:
@@ -146,14 +153,10 @@ class Console():
     def __init__(self, parameter='scenes'):
         """Initialize the console object."""
         self._channels = collections.OrderedDict((str(c+1), 0.0) for c in range(maxchannels))
-        self._target = None
+        self._target = self._channels
         self._fadetime = time.time()
         self._sceneid = None
         self._lock = threading.Lock()
         self._scenepath = parameter
-        try:
-            self.changescene('Startup')
-        except SceneNotFoundError:
-            _logger.warning('Unable to change to startup scene')
         # Start the scene transition task
         threading.Thread(target=self._fader).start()

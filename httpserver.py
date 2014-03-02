@@ -24,13 +24,13 @@ class _Console(object):
 
 @bottle.get('/status')
 def _getstatus():
-    return _Console.console.getstatus()
+    return {'status': _Console.console.getstatus()}
 
 
 @bottle.get('/channels')
 def _getchannels():
     try:
-        return _Console.console.getchannels()
+        return {'channels': _Console.console.getchannels()}
     except console.NotSupportedError:
         bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
@@ -51,7 +51,7 @@ def _postchannelsload():
 @bottle.get('/scenes')
 def _getscenes():
     try:
-        return _Console.console.getscenes()
+        return {'scenes': _Console.console.getscenes()}
     except console.NotSupportedError:
         bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:
@@ -128,9 +128,22 @@ def _postscenesave(sceneid):
         bottle.abort(503, 'Unable to communicate with console')
 
 
+@bottle.get('/data')
+def _getdata():
+    try:
+        status = _Console.console.getstatus()
+        channels = _Console.console.getchannels()
+        scenes = _Console.console.getscenes()
+        return {'status': status, 'channels': channels, 'scenes': scenes}
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
 @bottle.get('/')
 @bottle.get('/<filename:path>')
-def _getfile(filename='index.html'):
+def _getfile(filename='scenes.html'):
     return bottle.static_file(filename, root='web')
 
 
