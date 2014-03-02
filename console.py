@@ -86,8 +86,9 @@ class Console():
     def getscenes(self):
         try:
             scenelist = _alphasort(os.listdir(self._scenepath))
-            scenelist = map(lambda s: os.path.splitext(s)[0], scenelist)
-            return list(scenelist)
+            scenelist = [os.path.splitext(s) for s in scenelist]
+            scenelist = [s[0] for s in scenelist if s[1] == '.json']
+            return scenelist
         except OSError:
             raise CommunicationError
 
