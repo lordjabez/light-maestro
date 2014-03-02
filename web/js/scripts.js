@@ -57,10 +57,16 @@ function colorFixtures() {
 }
 
 function pollData() {
-    $.ajax({method: 'GET', url: '/data', success: setData})
+    $.ajax({method: 'GET', url: '/data', success: setData, error: alertNoComm})
 }
 
 function setData(data) {
+    if (data.status.condition != 'operational') {
+        alertNonOp(data.status.interface)
+    }
+    else {
+        hideAlert()
+    }
     if (channels != data.channels) {
         channels = data.channels
         colorFixtures()
@@ -153,6 +159,22 @@ function controlScene(event) {
 function changeScene(event) {
     var sceneid = $(this).html()
     $.ajax({method: 'POST', url: '/scenes/' + sceneid + '/_change'})
+}
+
+function alertNoComm() {
+    displayAlert('User Interface not communicating with Light Maestro')
+}
+
+function alertNonOp(device) {
+    displayAlert('Light Maestro not communicating with ' + device)
+}
+
+function displayAlert(text) {
+    $('div[data-role="footer"]').show().html('<p>' + text + '</p>')
+}
+
+function hideAlert() {
+    $('div[data-role="footer"]').hide()
 }
 
 var dataPoller

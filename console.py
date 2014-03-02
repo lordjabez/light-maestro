@@ -64,7 +64,7 @@ class Console():
         @return: Dictionary containing status information
         """
         status = {'condition': 'operational'}
-        status['interface'] = self.__class__.__name__.lower()
+        status['interface'] = self.__class__.__name__
         status['fading'] = self._target is not None
         if self._sceneid is not None:
             status['scene'] = self._sceneid

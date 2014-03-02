@@ -4,3 +4,8 @@
 div.ui-block-a, div.ui-block-b, div.ui-block-c, div.ui-block-d {
     text-align: center;
 }
+
+div[data-role="footer"] {
+    text-align: center;
+    display: none;
+}
