@@ -133,7 +133,7 @@ function changeValues(event) {
         case 'value-blue': var offset = 3; break
     }
     var value = parseFloat($('#' + channel).val())
-    $('.fixture-layout input[type="checkbox"]').each( function() {
+    $('#fixture-layout input').each( function() {
         if ($(this).prop('checked')) {
            var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
            channels[id + offset] = value
@@ -200,9 +200,10 @@ $(document).bind('pagebeforeshow', function() {
     $('#scene-controls button').unbind().bind('click', controlScene)
 
     // Bind the change value function to the sliders.
-    $('#value-sliders').unbind().bind('slidestart', startSlide)
-    $('#value-sliders').unbind().bind('change', changeValues)
-    $('#value-sliders').unbind().bind('slidestop', stopSlide)
+    $('#value-sliders input').unbind()
+    $('#value-sliders input').bind('slidestart', startSlide)
+    $('#value-sliders input').bind('change', changeValues)
+    $('#value-sliders input').bind('slidestop', stopSlide)
 
     // Set up the data poller.
     clearInterval(dataPoller)
