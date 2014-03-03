@@ -76,7 +76,7 @@ function setData(data) {
         var html = ''
         for (var s = 0; s < scenes.length; s++) {
             var highlight = scenes[s] == data.status.scene ? 'class=" ui-btn-active"' : ''
-            html += '<li data-icon="false"' + highlight + '><a class="scene-item">' + data.scenes[s] + '</a></li>'
+            html += '<li data-icon="false"' + highlight + '><a>' + data.scenes[s] + '</a></li>'
         }
         $('#scene-list').html(html).listview('refresh')
         $('#scene-list a').unbind().bind('click', changeScene)
@@ -186,9 +186,6 @@ $(document).bind('pagebeforeshow', function() {
     $('body').unbind().bind('selectstart', function() {
         return false
     });
-
-    // Bind a handler for scene selection.
-    $('.scene-item').unbind().bind('click', changeScene)
 
     // Bind a handler to each fixture click.
     $('#fixture-layout input').unbind().bind('click', selectFixture)
