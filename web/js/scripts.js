@@ -143,17 +143,26 @@ function changeValues(event) {
     $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data})
 }
 
-function controlScene(event) {
-    var command = event.target.id
+function saveScene(event) {
+    $.mobile.loading('show');
     var sceneid = $('#scene-name').val()
     var fade = parseInt($('#scene-fade').val())
     var url = '/scenes/' + sceneid
     var data = JSON.stringify({'channels': channels, 'fade': fade})
-    switch(command) {
-        case 'scene-save': $.ajax({method: 'PUT', url: url, headers: JSON_HEADER, data: data}); break
-        case 'scene-load': $.ajax({method: 'POST', url: url + '/_load'}); break
-        case 'scene-change': $.ajax({method: 'POST', url: url + '/_change'}); break
-    }
+    $.ajax({method: 'PUT', url: url, headers: JSON_HEADER, data: data, success: saveSuccess, error: saveError, complete: saveComplete})
+}
+
+function saveSuccess() {
+    $.mobile.loading('hide');
+    $('.ui-dialog').dialog('close')
+}
+
+function saveError() {
+    $('div[data-id="save-status-footer"]').show().html('<h3>Save Failed</h3>')
+}
+
+function saveComplete() {
+    $.mobile.loading('hide')
 }
 
 function changeScene(event) {
@@ -170,11 +179,11 @@ function alertNonOp(device) {
 }
 
 function displayAlert(text) {
-    $('div[data-role="footer"]').show().html('<p>' + text + '</p>')
+    $('div[data-id="status-footer"]').html('<h3>' + text + '</h3>').show()
 }
 
 function hideAlert() {
-    $('div[data-role="footer"]').hide()
+    $('div[data-id="status-footer"]').hide()
 }
 
 var dataPoller
@@ -193,14 +202,17 @@ $(document).bind('pagebeforeshow', function() {
     // Bind the select fixture functions to selection buttons.
     $('#fixture-selectors button').unbind().bind('click', selectFixtures)
 
-    // Bind the save/load/change scene buttons.
-    $('#scene-controls button').unbind().bind('click', controlScene)
-
     // Bind the change value function to the sliders.
     $('#value-sliders input').unbind()
     $('#value-sliders input').bind('slidestart', startSlide)
     $('#value-sliders input').bind('change', changeValues)
     $('#value-sliders input').bind('slidestop', stopSlide)
+
+    // Bind the scene saving function
+    $('#scene-save').unbind().bind('click', saveScene)
+
+    // Hide any status footers (they'll be auto-redisplayed if needed)
+    $('div[data-role="footer"]').hide()
 
     // Set up the data poller.
     clearInterval(dataPoller)
