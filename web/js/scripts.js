@@ -12,6 +12,9 @@ var status = {}
 var channels = {}
 var scenes = []
 
+var sceneid = null
+var scene = null
+
 function toHex(n) {
     var prefix = n < 16 ? '0' : ''
     return prefix + n.toString(16)
@@ -81,7 +84,18 @@ function setData(data) {
         $('#scene-list').html(html).listview('refresh')
         $('#scene-list a').unbind().bind('click', changeScene)
     }
+    if (data.status.scene) {
+        if (data.status.scene != sceneid) {
+            sceneid = data.status.scene
+            $.ajax({method: 'GET', url: '/scenes/' + sceneid, success: setScene, error: alertNoComm})
+        }
+    }
 }
+
+function setScene(data) {
+    scene = data
+}
+
 
 function selectFixture() {
     if ($(this).prop('checked')) {
@@ -210,6 +224,14 @@ $(document).bind('pagebeforeshow', function() {
 
     // Bind the scene saving function
     $('#scene-save').unbind().bind('click', saveScene)
+
+    // Grab current scene data to populate dialog
+    if (sceneid) {
+        $('#scene-name').val(sceneid)
+    }
+    if (scene) {
+        $('#scene-fade').val(scene.fade)
+    }
 
     // Hide any status footers (they'll be auto-redisplayed if needed)
     $('div[data-role="footer"]').hide()
