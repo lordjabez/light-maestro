@@ -141,13 +141,17 @@ function setSliderLabels(a, r, g, b) {
     $('label[for="value-blue"]').html(b || '')
 }
 
+var sliderMode = 'none'
+
 function setSlidersNone() {
+    sliderMode = 'none'
     setSliderValues()
     setSliderLabels()
     $('#value-sliders input').slider('disable')
 }
 
 function setSlidersWhites(num) {
+    sliderMode = 'white'
     setSliderValues(channels[num+0], channels[num+1], channels[num+2])
     setSliderLabels('Brightness', 'Warm', 'Cool')
     $('#value-sliders input').slider('enable')
@@ -155,12 +159,14 @@ function setSlidersWhites(num) {
 }
 
 function setSlidersColors(num) {
+    sliderMode = 'color'
     setSliderValues(channels[num+0], channels[num+1], channels[num+2], channels[num+3])
     setSliderLabels('Brightness', 'Red', 'Green', 'Blue')
     $('#value-sliders input').slider('enable')
 }
 
 function setSlidersMixed(num) {
+    sliderMode = 'mixed'
     setSliderValues(channels[num+0])
     setSliderLabels('Brightness')
     $('#value-sliders input').slider('disable')
@@ -187,7 +193,31 @@ function stopSlide() {
     sliding = false
 }
 
+function setSlidersBackground(color) {
+    var a = parseInt($('#value-alpha').val())
+    var r = parseInt($('#value-red').val())
+    var g = parseInt($('#value-green').val())
+    var b = parseInt($('#value-blue').val())
+    switch (sliderMode) {
+        case 'none':
+            var color = '#000000'
+            break
+        case 'white':
+            var color = getWhite(a, r, g)
+            break
+        case 'color':
+            var color = getColor(a, r, g, b, 0.33)
+            break
+        case 'mixed':
+            var hex = toHex(Math.round(Math.pow(a / 100.0, 0.5) * 255))
+            var color = '#' + hex + hex + hex
+            break
+    }
+    $('.ui-slider-bg').css('background', color)
+}
+
 function changeValues(event) {
+    setSlidersBackground()
     if (!sliding) {
         return
     }
