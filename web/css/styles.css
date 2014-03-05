@@ -8,3 +8,11 @@ div.ui-block-a, div.ui-block-b, div.ui-block-c, div.ui-block-d {
 div[data-role="footer"] {
     text-align: center;
 }
+
+#fixture-layout .ui-checkbox-on, .ui-checkbox-off {
+    padding: 3px;
+}
+
+#fixture-layout .ui-checkbox .ui-btn-inner {
+    border: 1px solid black;
+}
