@@ -118,7 +118,7 @@ class Console():
         try:
             with open(self._getscenefilename(sceneid), 'w') as f:
                 json.dump(scene, f, indent=4, sort_keys=True)
-            wavetrigger.writescenechangewave(sceneid)
+            wavetrigger.writewavefile(sceneid)
         except IOError:
             raise CommunicationError
         self._sceneid = sceneid
@@ -126,6 +126,7 @@ class Console():
     def deletescene(self, sceneid):
         try:
             os.remove(self._getscenefilename(sceneid))
+            os.remove(wavetrigger.getwavefilename(sceneid))
         except FileNotFoundError:
             return
         except OSError:

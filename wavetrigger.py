@@ -92,13 +92,19 @@ def writewave(method, url, name, data):
     data_chunk = struct.pack('<4sL', 'data'.encode(), 0)
     req_chunk = struct.pack('<4sL', 'req '.encode(), req_len) + req_data.encode()
 
-    with open('triggers/' + name + '.wav', 'wb') as f:
+    filename = getwavefilename(name)
+
+    with open(filename, 'wb') as f:
         f.write(riff_chunk + fmt_chunk + data_chunk + req_chunk)
 
 
-def writescenechangewave(name):
+def writewavefile(sceneid):
     """TODO"""
-    writewave('POST', '/scenes/{0}/_change'.format(name), name, '')
+    writewave('POST', '/scenes/{0}/_change'.format(sceneid), sceneid, '')
+
+
+def getwavefilename(sceneid):
+    return 'triggers/' + sceneid + '.wav'
 
 
 def start(host):
