@@ -251,8 +251,6 @@ function hideAlert() {
     $('div[data-id="status-footer"]').hide()
 }
 
-var dataPoller
-
 // Things to do before the page is shown.
 $(document).bind('pagebeforeshow', function() {
 
@@ -287,9 +285,7 @@ $(document).bind('pagebeforeshow', function() {
     // Hide any status footers (they'll be auto-redisplayed if needed)
     $('div[data-role="footer"]').hide()
 
-    // Set up the data poller.
-    clearInterval(dataPoller)
-    dataPoller = setInterval(pollData, 500)
-
 });
 
+// Run the poller at the given rate.
+setInterval(pollData, 500)
