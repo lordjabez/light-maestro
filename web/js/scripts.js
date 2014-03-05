@@ -198,13 +198,14 @@ function changeValues(event) {
         case 'value-blue': var offset = 3; break
     }
     var value = parseFloat($('#' + channel).val())
+    var newChannels = {}
     $('#fixture-layout input').each( function() {
         if ($(this).prop('checked')) {
            var num = getNum($(this))
-           channels[num + offset] = value
+           newChannels[num + offset] = value
        }
     });
-    var data = JSON.stringify({'channels': channels})
+    var data = JSON.stringify({'channels': newChannels})
     $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data})
 }
 
