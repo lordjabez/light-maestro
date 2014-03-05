@@ -329,6 +329,9 @@ $(document).bind('pagebeforeshow', function() {
         $('#scene-fade').val(scene.fade)
     }
 
+    // Update sliders
+    refreshSliders()
+
     // Hide any status footers (they'll be auto-redisplayed if needed)
     $('div[data-role="footer"]').hide()
 
