@@ -59,11 +59,12 @@ function colorFixtures() {
             var color = getWhite(a, r, g)
         }
         else {
-            var color = getColor(a, r, g, b, 0.25)
+            var color = getColor(a, r, g, b, 0.33)
         }
         var id = 'fixture-' + f.toString()
         $('label[for="' + id + '"] .ui-btn-inner').css('background', color)
     }
+
 }
 
 function pollData() {
