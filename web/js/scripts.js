@@ -20,6 +20,13 @@ function toHex(n) {
     return prefix + n.toString(16)
 }
 
+function getNum(elem) {
+    if (elem === undefined) return
+    var id = elem.attr('id')
+    if (id === undefined) return
+    return parseInt(id.split('-')[1]) * 4 - 3
+}
+
 function getColor(a, r, g, b, factor) {
     var alpha = Math.pow(a / 100.0, 0.5)
     var red = Math.round(Math.pow(r * alpha / 100.0, factor) * 255.0)
@@ -96,15 +103,67 @@ function setScene(data) {
     scene = data
 }
 
-
-function selectFixture() {
-    if ($(this).prop('checked')) {
-        var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
-        $('#value-alpha').val(channels[id + 0]).slider('refresh')
-        $('#value-red').val(channels[id + 1]).slider('refresh')
-        $('#value-green').val(channels[id + 2]).slider('refresh')
-        $('#value-blue').val(channels[id + 3]).slider('refresh')
+function refreshSliders() {
+    var fixture = $(this).prop('checked') ? $(this) : $('#fixture-layout input:checked').first()
+    var num = getNum(fixture)
+    var whitesChecked = $('#fixture-layout input.fixture-white:checked').length > 0
+    var colorsChecked = $('#fixture-layout input.fixture-color:checked').length > 0
+    if (whitesChecked) {
+        if (colorsChecked) {
+            setSlidersMixed(num)
+        }
+        else {
+            setSlidersWhites(num)
+        }
     }
+    else {
+        if (colorsChecked) {
+            setSlidersColors(num)
+        }
+        else {
+            setSlidersNone()
+        }
+    }
+}
+
+function setSliderValues(a, r, g, b) {
+    $('#value-alpha').val(a || 0).slider('refresh')
+    $('#value-red').val(r || 0).slider('refresh')
+    $('#value-green').val(g || 0).slider('refresh')
+    $('#value-blue').val(b || 0).slider('refresh')
+}
+
+function setSliderLabels(a, r, g, b) {
+    $('label[for="value-alpha"]').html(a || '')
+    $('label[for="value-red"]').html(r || '')
+    $('label[for="value-green"]').html(g || '')
+    $('label[for="value-blue"]').html(b || '')
+}
+
+function setSlidersNone() {
+    setSliderValues()
+    setSliderLabels()
+    $('#value-sliders input').slider('disable')
+}
+
+function setSlidersWhites(num) {
+    setSliderValues(channels[num+0], channels[num+1], channels[num+2])
+    setSliderLabels('Brightness', 'Warm', 'Cool')
+    $('#value-sliders input').slider('enable')
+    $('#value-blue').slider('disable')
+}
+
+function setSlidersColors(num) {
+    setSliderValues(channels[num+0], channels[num+1], channels[num+2], channels[num+3])
+    setSliderLabels('Brightness', 'Red', 'Green', 'Blue')
+    $('#value-sliders input').slider('enable')
+}
+
+function setSlidersMixed(num) {
+    setSliderValues(channels[num+0])
+    setSliderLabels('Brightness')
+    $('#value-sliders input').slider('disable')
+    $('#value-alpha').slider('enable')
 }
 
 function selectFixtures() {
@@ -114,15 +173,7 @@ function selectFixtures() {
     $('input[class="fixture-white"]').prop('checked', whitesChecked)
     $('input[class="fixture-color"]').prop('checked', colorsChecked)
     $('#fixture-layout input').checkboxradio('refresh')
-    $('#fixture-layout input').each( function() {
-        if ($(this).prop('checked')) {
-            var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
-            $('#value-alpha').val(channels[id + 0]).slider('refresh')
-            $('#value-red').val(channels[id + 1]).slider('refresh')
-            $('#value-green').val(channels[id + 2]).slider('refresh')
-            $('#value-blue').val(channels[id + 3]).slider('refresh')
-        }
-    });
+    refreshSliders()
 }
 
 var sliding = false
@@ -149,8 +200,8 @@ function changeValues(event) {
     var value = parseFloat($('#' + channel).val())
     $('#fixture-layout input').each( function() {
         if ($(this).prop('checked')) {
-           var id = parseInt($(this).attr('id').split('-')[1]) * 4 - 3
-           channels[id + offset] = value
+           var num = getNum($(this))
+           channels[num + offset] = value
        }
     });
     var data = JSON.stringify({'channels': channels})
@@ -211,7 +262,7 @@ $(document).bind('pagebeforeshow', function() {
     });
 
     // Bind a handler to each fixture click.
-    $('#fixture-layout input').unbind().bind('click', selectFixture)
+    $('#fixture-layout input').unbind().bind('click', refreshSliders)
 
     // Bind the select fixture functions to selection buttons.
     $('#fixture-selectors button').unbind().bind('click', selectFixtures)
