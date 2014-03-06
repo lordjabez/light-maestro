@@ -17,8 +17,10 @@ var scene = null
 
 var whitePalette = {
     'Off': [0.0, 0.0, 0.0, 0.0],
-    'Warm': [100.0, 100.0, 0.0],
-    'Cool': [100.0, 0.0, 100.0]
+    'Half Mix': [100.0, 50.0, 50.0],
+    'Full Warm': [100.0, 100.0, 0.0],
+    'Full Cool': [100.0, 0.0, 100.0],
+    'Full Mix': [100.0, 100.0, 100.0]
 }
 
 var colorPalette = {
