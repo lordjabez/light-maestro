@@ -274,7 +274,7 @@ function changeValues(event) {
         newChannels[num + offset] = value
     });
     var data = JSON.stringify({'channels': newChannels})
-    $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data})
+    $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data, success: pollData})
 }
 
 function pickColor() {
@@ -288,7 +288,7 @@ function pickColor() {
         }
     });
     var data = JSON.stringify({'channels': newChannels})
-    $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data})
+    $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data, success: pollData})
 }
 
 function saveScene(event) {
@@ -301,6 +301,7 @@ function saveScene(event) {
 }
 
 function saveSuccess() {
+    pollData()
     $.mobile.loading('hide');
     $('.ui-dialog').dialog('close')
 }
@@ -315,7 +316,7 @@ function saveComplete() {
 
 function changeScene(event) {
     var sceneid = $(this).html()
-    $.ajax({method: 'POST', url: '/scenes/' + sceneid + '/_change'})
+    $.ajax({method: 'POST', url: '/scenes/' + sceneid + '/_change', success: pollData})
 }
 
 function alertNoComm() {
