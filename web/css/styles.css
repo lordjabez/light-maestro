@@ -5,6 +5,10 @@
     text-align: center;
 }
 
+#control-buttons .ui-block-a, .ui-block-b {
+    text-align: center;
+}
+
 div[data-role="footer"] {
     text-align: center;
 }

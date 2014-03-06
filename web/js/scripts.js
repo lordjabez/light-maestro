@@ -15,6 +15,22 @@ var scenes = []
 var sceneid = null
 var scene = null
 
+var whitePalette = {
+    'Off': [0.0, 0.0, 0.0, 0.0],
+    'Warm': [100.0, 100.0, 0.0],
+    'Cool': [100.0, 0.0, 100.0]
+}
+
+var colorPalette = {
+    'Off': [0.0, 0.0, 0.0, 0.0],
+    'Red': [100.0, 100.0, 0.0, 0.0],
+    'Green': [100.0, 0.0, 100.0, 0.0],
+    'Blue': [100.0, 0.0, 0.0, 100.0],
+    'Cyan': [100.0, 0.0, 100.0, 100.0],
+    'Magenta': [100.0, 100.0, 0.0, 100.0],
+    'White': [100.0, 100.0, 100.0, 100.0]
+}
+
 function toHex(n) {
     var prefix = n < 16 ? '0' : ''
     return prefix + n.toString(16)
@@ -147,6 +163,8 @@ function setSlidersNone() {
     sliderMode = 'none'
     setSliderValues()
     setSliderLabels()
+    $('#white-palette').hide()
+    $('#color-palette').hide()
     $('#value-sliders input').slider('disable')
 }
 
@@ -154,6 +172,8 @@ function setSlidersWhites(num) {
     sliderMode = 'white'
     setSliderValues(channels[num+0], channels[num+1], channels[num+2])
     setSliderLabels('Brightness', 'Warm', 'Cool')
+    $('#white-palette').show()
+    $('#color-palette').hide()
     $('#value-sliders input').slider('enable')
     $('#value-blue').slider('disable')
 }
@@ -162,6 +182,8 @@ function setSlidersColors(num) {
     sliderMode = 'color'
     setSliderValues(channels[num+0], channels[num+1], channels[num+2], channels[num+3])
     setSliderLabels('Brightness', 'Red', 'Green', 'Blue')
+    $('#white-palette').hide()
+    $('#color-palette').show()
     $('#value-sliders input').slider('enable')
 }
 
@@ -169,6 +191,8 @@ function setSlidersMixed(num) {
     sliderMode = 'mixed'
     setSliderValues(channels[num+0])
     setSliderLabels('Brightness')
+    $('#white-palette').hide()
+    $('#color-palette').hide()
     $('#value-sliders input').slider('disable')
     $('#value-alpha').slider('enable')
 }
@@ -245,11 +269,23 @@ function changeValues(event) {
     }
     var value = parseFloat($('#' + channel).val())
     var newChannels = {}
-    $('#fixture-layout input').each( function() {
-        if ($(this).prop('checked')) {
-           var num = getNum($(this))
-           newChannels[num + offset] = value
-       }
+    $('#fixture-layout input:checked').each( function() {
+        var num = getNum($(this))
+        newChannels[num + offset] = value
+    });
+    var data = JSON.stringify({'channels': newChannels})
+    $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data})
+}
+
+function pickColor() {
+    var components = $(this).attr('color').split(',').map(parseFloat)
+    setSliderValues(components[0], components[1], components[2], components[3])
+    var newChannels = {}
+    $('#fixture-layout input:checked').each( function() {
+        var num = getNum($(this))
+        for (var c = 0; c < components.length; c++) {
+            newChannels[num + c] = components[c]
+        }
     });
     var data = JSON.stringify({'channels': newChannels})
     $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data})
@@ -317,6 +353,22 @@ $(document).bind('pagebeforeshow', function() {
     $('#value-sliders input').bind('slidestart', startSlide)
     $('#value-sliders input').bind('change', changeValues)
     $('#value-sliders input').bind('slidestop', stopSlide)
+
+    // Build the palettes and bind handlers to them.
+    var html = ''
+    for (var p in whitePalette) {
+        var color = getWhite(whitePalette[p][0], whitePalette[p][1], whitePalette[p][2])
+        html += '<button style="background: ' + color + ';" color="' + whitePalette[p] + '" data-mini="true">' + p + '</button>'
+    }
+    $('#white-palette').html(html) //.trigger('create')
+    $('#white-palette button').unbind().bind('click', pickColor)
+    var html = ''
+    for (var p in colorPalette) {
+        var color = getColor(colorPalette[p][0], colorPalette[p][1], colorPalette[p][2], colorPalette[p][3], 0.33)
+        html += '<button style="background: ' + color + ';" color="' + colorPalette[p] + '" data-mini="true">' + p + '</button>'
+    }
+    $('#color-palette').html(html) //.trigger('create')
+    $('#color-palette button').unbind().bind('click', pickColor)
 
     // Bind the scene saving function
     $('#scene-save').unbind().bind('click', saveScene)

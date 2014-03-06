@@ -84,12 +84,16 @@
             </div>
         </div>
 
-        <fieldset data-role="controlgroup" data-type="horizontal" id="fixture-selectors">
-            <button id="select-all" data-mini="true">All</button>
-            <button id="select-white" data-mini="true">Whites</button>
-            <button id="select-colors" data-mini="true">Colors</button>
-            <button id="select-none" data-mini="true">None</button>
-        </fieldset>
+        <div class="ui-grid-a" id="control-buttons">
+            <fieldset class="ui-block-a" data-role="controlgroup" data-type="horizontal" id="fixture-selectors">
+                <button id="select-all" data-mini="true">All</button>
+                <button id="select-white" data-mini="true">Whites</button>
+                <button id="select-colors" data-mini="true">Colors</button>
+                <button id="select-none" data-mini="true">None</button>
+            </fieldset>
+            <fieldset class="ui-block-b" data-role="controlgroup" data-type="horizontal" data-corners="false" id="white-palette"></fieldset>
+            <fieldset class="ui-block-b" data-role="controlgroup" data-type="horizontal" data-corners="false" id="color-palette"></fieldset>
+        </div>
 
         <div id="value-sliders" data-role="fieldcontain">
             <label for="value-alpha"></label><input type="range" id="value-alpha" value="0" min="0" max="100" data-highlight="true"/>
