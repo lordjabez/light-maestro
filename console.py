@@ -83,8 +83,9 @@ class Console():
             self._target = data.get('channels', {})
             self._fadetime = time.time() + fade
             self._sceneid = sceneid
+            # Bypass the fading logic
             if fade == 0:
-                self._dofadestep()
+                self._setchannels(self._target)
 
     def getscenes(self):
         try:
@@ -138,25 +139,22 @@ class Console():
     def _setchannels(self, channels):
         self._channels.update(channels)
 
-    def _dofadestep(self, fadedelay=float('inf')):
-        remainingfade = self._fadetime - time.time()
-        if remainingfade > fadedelay:
-            fadechannels = {}
-            for c, v in self._target.items():
-                delta = (self._target[c] - self._channels[c]) * fadedelay / remainingfade
-                fadechannels[c] = self._channels[c] + delta
-                self._setchannels(fadechannels)
-        else:
-            self._setchannels(self._target)
-            self._target = None
-
     def _fader(self):
         fadedelay = 0.1
         while True:
             time.sleep(fadedelay)
             if self._target:
                 with self._lock:
-                    self._dofadestep(fadedelay)
+                    remainingfade = self._fadetime - time.time()
+                    if remainingfade > fadedelay:
+                        fadechannels = {}
+                        for c, v in self._target.items():
+                            delta = (self._target[c] - self._channels[c]) * fadedelay / remainingfade
+                            fadechannels[c] = self._channels[c] + delta
+                            self._setchannels(fadechannels)
+                    else:
+                        self._setchannels(self._target)
+                        self._target = None
 
     def __init__(self, parameter='scenes'):
         """Initialize the console object."""
