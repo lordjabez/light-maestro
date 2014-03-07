@@ -15,23 +15,6 @@ var scenes = []
 var sceneid = null
 var scene = null
 
-var whitePalette = {
-    'Off': [0.0, 0.0, 0.0, 0.0],
-    'Half Mix': [100.0, 50.0, 50.0],
-    'Full Warm': [100.0, 100.0, 0.0],
-    'Full Cool': [100.0, 0.0, 100.0],
-    'Full Mix': [100.0, 100.0, 100.0]
-}
-
-var colorPalette = {
-    'Off': [0.0, 0.0, 0.0, 0.0],
-    'Red': [100.0, 100.0, 0.0, 0.0],
-    'Green': [100.0, 0.0, 100.0, 0.0],
-    'Blue': [100.0, 0.0, 0.0, 100.0],
-    'Cyan': [100.0, 0.0, 100.0, 100.0],
-    'Magenta': [100.0, 100.0, 0.0, 100.0],
-    'White': [100.0, 100.0, 100.0, 100.0]
-}
 
 function toHex(n) {
     var prefix = n < 16 ? '0' : ''
@@ -274,7 +257,7 @@ function changeValues(event) {
     $('#fixture-layout input:checked').each( function() {
         var num = getNum($(this))
         newChannels[num + offset] = value
-    });
+    })
     var data = JSON.stringify({'channels': newChannels})
     $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data, success: pollData})
 }
@@ -288,13 +271,13 @@ function pickColor() {
         for (var c = 0; c < components.length; c++) {
             newChannels[num + c] = components[c]
         }
-    });
+    })
     var data = JSON.stringify({'channels': newChannels})
     $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data, success: pollData})
 }
 
 function saveScene(event) {
-    $.mobile.loading('show');
+    $.mobile.loading('show')
     var sceneid = $('#scene-name').val()
     var fade = parseInt($('#scene-fade').val())
     var url = '/scenes/' + sceneid
@@ -304,7 +287,7 @@ function saveScene(event) {
 
 function saveSuccess() {
     pollData()
-    $.mobile.loading('hide');
+    $.mobile.loading('hide')
     $('.ui-dialog').dialog('close')
 }
 
@@ -343,7 +326,7 @@ $(document).bind('pagebeforeshow', function() {
     // Disable any ability to select text in the GUI.
     $('body').unbind().bind('selectstart', function() {
         return false
-    });
+    })
 
     // Bind a handler to each fixture click.
     $('#fixture-layout input').unbind().bind('click', refreshSliders)
@@ -358,19 +341,17 @@ $(document).bind('pagebeforeshow', function() {
     $('#value-sliders input').bind('slidestop', stopSlide)
 
     // Build the palettes and bind handlers to them.
-    var html = ''
-    for (var p in whitePalette) {
-        var color = getWhite(whitePalette[p][0], whitePalette[p][1], whitePalette[p][2])
-        html += '<button style="background: ' + color + ';" color="' + whitePalette[p] + '" data-mini="true">' + p + '</button>'
-    }
-    $('#white-palette').html(html) //.trigger('create')
+    $('#white-palette button').each( function() {
+        var components = $(this).attr('color').split(',').map(parseFloat)
+        $(this).parent().css('background', getWhite(components[0], components[1], components[2]))
+        $(this).html('&nbsp;&nbsp;&nbsp;&nbsp;').button('refresh')
+    })
+    $('#color-palette button').each( function() {
+        var components = $(this).attr('color').split(',').map(parseFloat)
+        $(this).parent().css('background', getColor(components[0], components[1], components[2], components[3], 0.33))
+        $(this).html('&nbsp;&nbsp;&nbsp;&nbsp;').button('refresh')
+    })
     $('#white-palette button').unbind().bind('click', pickColor)
-    var html = ''
-    for (var p in colorPalette) {
-        var color = getColor(colorPalette[p][0], colorPalette[p][1], colorPalette[p][2], colorPalette[p][3], 0.33)
-        html += '<button style="background: ' + color + ';" color="' + colorPalette[p] + '" data-mini="true">' + p + '</button>'
-    }
-    $('#color-palette').html(html) //.trigger('create')
     $('#color-palette button').unbind().bind('click', pickColor)
 
     // Bind the scene saving function
@@ -390,7 +371,7 @@ $(document).bind('pagebeforeshow', function() {
     // Hide any status footers (they'll be auto-redisplayed if needed)
     $('div[data-role="footer"]').hide()
 
-});
+})
 
 // Run the poller at the given rate.
 setInterval(pollData, 500)
