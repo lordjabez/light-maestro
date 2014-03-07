@@ -1,6 +1,12 @@
 /* @copyright: 2013 Single D Software - All Rights Reserved
    @summary: Cascading style sheet for the Light Maestro GUI */
 
+.ui-focus, .ui-btn:focus {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
 #fixture-layout .ui-block-a, .ui-block-b, .ui-block-c, .ui-block-d {
     text-align: center;
 }
