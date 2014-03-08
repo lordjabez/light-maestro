@@ -16,6 +16,10 @@ var sceneid = null
 var scene = null
 
 
+function areDifferent(obj1, obj2){
+  return JSON.stringify(obj1) !== JSON.stringify(obj2);
+}
+
 function toHex(n) {
     var prefix = n < 16 ? '0' : ''
     return prefix + n.toString(16)
@@ -72,6 +76,22 @@ function pollData() {
     $.ajax({method: 'GET', url: '/data', success: setData, error: alertNoComm})
 }
 
+function refreshChannels(data) {
+    channels = data.channels
+    colorFixtures()
+}
+
+function refreshScenes(data) {
+    scenes = data.scenes
+    var html = ''
+    for (var s = 0; s < scenes.length; s++) {
+        var highlight = scenes[s] == data.status.scene ? 'class=" ui-btn-active"' : ''
+        html += '<li data-icon="false"' + highlight + '><a>' + data.scenes[s] + '</a></li>'
+    }
+    $('#scene-list').html(html).listview('refresh')
+    $('#scene-list a').unbind().bind('click', changeScene)
+}
+
 function setData(data) {
     if (data.status.condition != 'operational') {
         alertNonOp(data.status.interface)
@@ -79,23 +99,16 @@ function setData(data) {
     else {
         hideAlert()
     }
-    if (channels != data.channels) {
-        channels = data.channels
-        colorFixtures()
+    if (areDifferent(channels, data.channels)) {
+        refreshChannels(data)
     }
-    if (scenes != data.scenes) {
-        scenes = data.scenes
-        var html = ''
-        for (var s = 0; s < scenes.length; s++) {
-            var highlight = scenes[s] == data.status.scene ? 'class=" ui-btn-active"' : ''
-            html += '<li data-icon="false"' + highlight + '><a>' + data.scenes[s] + '</a></li>'
-        }
-        $('#scene-list').html(html).listview('refresh')
-        $('#scene-list a').unbind().bind('click', changeScene)
+    if (areDifferent(scenes, data.scenes)) {
+        refreshScenes(data)
     }
     if (data.status.scene) {
         if (data.status.scene != sceneid) {
             sceneid = data.status.scene
+            refreshScenes(data)
             $.ajax({method: 'GET', url: '/scenes/' + sceneid, success: setScene, error: alertNoComm})
         }
     }
