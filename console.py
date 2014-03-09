@@ -129,6 +129,8 @@ class Console():
 
     def deletescene(self, sceneid):
         try:
+            if self._sceneid == sceneid:
+                self._sceneid = None
             os.remove(self._getscenefilename(sceneid))
             os.remove(wavetrigger.getwavefilename(sceneid))
         except FileNotFoundError:

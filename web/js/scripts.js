@@ -289,10 +289,15 @@ function pickColor() {
     $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data, success: pollData})
 }
 
+function changeScene(event) {
+    var sceneid = $(this).html()
+    $.ajax({method: 'POST', url: '/scenes/' + sceneid + '/_change', success: pollData})
+}
+
 function saveScene(event) {
     $.mobile.loading('show')
-    var sceneid = $('#scene-name').val()
-    var fade = parseInt($('#scene-fade').val())
+    var sceneid = $('#save-scene-name').val()
+    var fade = parseInt($('#save-scene-fade').val())
     var url = '/scenes/' + sceneid
     var data = JSON.stringify({'channels': channels, 'fade': fade})
     $.ajax({method: 'PUT', url: url, headers: JSON_HEADER, data: data, success: saveSuccess, error: saveError, complete: saveComplete})
@@ -300,21 +305,35 @@ function saveScene(event) {
 
 function saveSuccess() {
     pollData()
-    $.mobile.loading('hide')
     $('.ui-dialog').dialog('close')
 }
 
 function saveError() {
-    $('div[data-id="save-status-footer"]').show().html('<h3>Save Failed</h3>')
+    $('div[data-id="dialog-status-footer"]').show().html('<h3>Save Failed</h3>')
 }
 
 function saveComplete() {
     $.mobile.loading('hide')
 }
 
-function changeScene(event) {
-    var sceneid = $(this).html()
-    $.ajax({method: 'POST', url: '/scenes/' + sceneid + '/_change', success: pollData})
+function deleteScene(event) {
+    $.mobile.loading('show')
+    var sceneid = $('#delete-scene-name').val()
+    var url = '/scenes/' + sceneid
+    $.ajax({method: 'DELETE', url: url, success: deleteSuccess, error: deleteError, complete: deleteComplete})
+}
+
+function deleteSuccess() {
+    pollData()
+    $('.ui-dialog').dialog('close')
+}
+
+function deleteError() {
+    $('div[data-id="dialog-status-footer"]').show().html('<h3>Delete Failed</h3>')
+}
+
+function deleteComplete() {
+    $.mobile.loading('hide')
 }
 
 function alertNoComm() {
@@ -369,13 +388,15 @@ $(document).bind('pagebeforeshow', function() {
 
     // Bind the scene saving function
     $('#scene-save').unbind().bind('click', saveScene)
+    $('#scene-delete').unbind().bind('click', deleteScene)
 
     // Grab current scene data to populate dialog
     if (sceneid) {
-        $('#scene-name').val(sceneid)
+        $('#save-scene-name').val(sceneid)
+        $('#delete-scene-name').val(sceneid)
     }
     if (scene) {
-        $('#scene-fade').val(scene.fade)
+        $('#save-scene-fade').val(scene.fade)
     }
 
     // Update sliders
