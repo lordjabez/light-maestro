@@ -48,6 +48,26 @@ def _postchannelsload():
         bottle.abort(503, 'Unable to communicate with console')
 
 
+@bottle.get('/palette')
+def _getpalette():
+    try:
+        return {'palette': _Console.console.getpalette()}
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
+@bottle.put('/palette')
+def _putpalette():
+    try:
+        _Console.console.savepalette(bottle.request.json)
+    except console.NotSupportedError:
+        bottle.abort(501, 'Console does not support this function')
+    except console.CommunicationError:
+        bottle.abort(503, 'Unable to communicate with console')
+
+
 @bottle.get('/scenes')
 def _getscenes():
     try:
@@ -133,8 +153,9 @@ def _getdata():
     try:
         status = _Console.console.getstatus()
         channels = _Console.console.getchannels()
+        palette = _Console.console.getpalette()
         scenes = _Console.console.getscenes()
-        return {'status': status, 'channels': channels, 'scenes': scenes}
+        return {'status': status, 'channels': channels, 'palette': palette, 'scenes': scenes}
     except console.NotSupportedError:
         bottle.abort(501, 'Console does not support this function')
     except console.CommunicationError:

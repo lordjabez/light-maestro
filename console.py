@@ -87,6 +87,20 @@ class Console():
             if fade == 0:
                 self._setchannels(self._target)
 
+    def getpalette(self):
+        try:
+            with open('palettes/Palette.json') as f:
+                return json.load(f)
+        except (IOError, ValueError):
+            raise CommunicationError
+
+    def savepalette(self, palette):
+        try:
+            with open('palettes/Palette.json', 'w') as f:
+                json.dump(palette, f, indent=4, sort_keys=True)
+        except (IOError, TypeError):
+            raise CommunicationError
+
     def getscenes(self):
         try:
             scenelist = _alphasort(os.listdir(self._scenepath))
@@ -123,7 +137,7 @@ class Console():
             with open(self._getscenefilename(sceneid), 'w') as f:
                 json.dump(scene, f, indent=4, sort_keys=True)
             wavetrigger.writewavefile(sceneid)
-        except IOError:
+        except (IOError, TypeError):
             raise CommunicationError
         self._sceneid = sceneid
 
