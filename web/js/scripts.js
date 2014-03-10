@@ -10,6 +10,7 @@ var JSON_HEADER = {'content-type': 'application/json'}
 
 var status = {}
 var channels = {}
+var palette = {}
 var scenes = []
 
 var sceneid = null
@@ -81,6 +82,29 @@ function refreshChannels(data) {
     colorFixtures()
 }
 
+function refreshPalette(data) {
+    palette = data.palette
+    $('#white-palette button').each( function(p) {
+        var a = palette.whites[p][0]
+        var r = palette.whites[p][1]
+        var g = palette.whites[p][2]
+        $(this).attr('index', p)
+        $(this).attr('color', palette.whites[p])
+        $(this).html('&nbsp;&nbsp;&nbsp;&nbsp;').button('refresh')
+        $(this).parent().css('background', getWhite(a, r, g))
+    })
+    $('#color-palette button').each( function(p) {
+        var a = palette.colors[p][0]
+        var r = palette.colors[p][1]
+        var g = palette.colors[p][2]
+        var b = palette.colors[p][3]
+        $(this).attr('index', p)
+        $(this).attr('color', palette.colors[p])
+        $(this).html('&nbsp;&nbsp;&nbsp;&nbsp;').button('refresh')
+        $(this).parent().css('background', getColor(a, r, g, b, 0.33))
+    })
+}
+
 function refreshScenes(data) {
     scenes = data.scenes
     var html = ''
@@ -101,6 +125,9 @@ function setData(data) {
     }
     if (areDifferent(channels, data.channels)) {
         refreshChannels(data)
+    }
+    if (areDifferent(palette, data.palette)) {
+        refreshPalette(data)
     }
     if (areDifferent(scenes, data.scenes)) {
         refreshScenes(data)
@@ -260,8 +287,16 @@ function changeValues(event) {
     $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data, success: pollData})
 }
 
-function pickColor() {
-    var components = $(this).attr('color').split(',').map(parseFloat)
+var suppressPickColor = false
+
+function pickPaletteColor() {
+    if (suppressPickColor) {
+        suppressPickColor = false
+        return
+    }
+    var color = $(this).attr('color')
+    if (!color) return
+    var components = color.split(',').map(parseFloat)
     setSliderValues(components[0], components[1], components[2], components[3])
     var newChannels = {}
     $('#fixture-layout input:checked').each( function() {
@@ -272,6 +307,32 @@ function pickColor() {
     })
     var data = JSON.stringify({'channels': newChannels})
     $.ajax({method: 'POST', url: '/channels/_load', headers: JSON_HEADER, data: data, success: pollData})
+}
+
+function setPaletteColor() {
+    suppressPickColor = true
+    var index = $(this).attr('index')
+    var container = $(this).closest('fieldset')
+    if (index === undefined || container == undefined) return
+    var a = parseInt($('#value-alpha').val())
+    var r = parseInt($('#value-red').val())
+    var g = parseInt($('#value-green').val())
+    var b = parseInt($('#value-blue').val())
+    var newPalette = {'whites': [], 'colors': []}
+    for (var p = 0; p < palette.whites.length; p++) {
+        newPalette.whites[p] = palette.whites[p]
+        newPalette.colors[p] = palette.colors[p]
+        if (p == index) {
+            if (container.attr('id') == 'white-palette') {
+                newPalette.whites[p] = [a, r, g]
+            }
+            else {
+                newPalette.colors[p] = [a, r, g, b]
+            }
+        }
+    }
+    var data = JSON.stringify(newPalette)
+    $.ajax({method: 'PUT', url: '/palette', headers: JSON_HEADER, data: data, success: pollData})
 }
 
 function changeScene(event) {
@@ -357,19 +418,9 @@ $(document).bind('pagebeforeshow', function() {
     $('#value-sliders input').bind('change', changeValues)
     $('#value-sliders input').bind('slidestop', stopSlide)
 
-    // Build the palettes and bind handlers to them.
-    $('#white-palette button').each( function() {
-        //var components = $(this).attr('color').split(',').map(parseFloat)
-        //$(this).parent().css('background', getWhite(components[0], components[1], components[2]))
-        $(this).html('&nbsp;&nbsp;&nbsp;&nbsp;').button('refresh')
-    })
-    $('#color-palette button').each( function() {
-        //var components = $(this).attr('color').split(',').map(parseFloat)
-        //$(this).parent().css('background', getColor(components[0], components[1], components[2], components[3], 0.33))
-        $(this).html('&nbsp;&nbsp;&nbsp;&nbsp;').button('refresh')
-    })
-    $('#white-palette button').unbind().bind('click', pickColor)
-    $('#color-palette button').unbind().bind('click', pickColor)
+    // Bind color pickers to the palette buttons
+    $('#white-palette button, #color-palette button').unbind()
+    $('#white-palette button, #color-palette button').bind('tap', pickPaletteColor).bind('taphold', setPaletteColor)
 
     // Bind the scene saving function
     $('#scene-save').unbind().bind('click', saveScene)
