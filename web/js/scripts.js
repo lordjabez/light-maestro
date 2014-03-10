@@ -236,21 +236,6 @@ function setSlidersBackground(color) {
             break
     }
     $('.ui-slider-bg').css('background', color)
-    /*var aHex = toHex(Math.round(Math.pow(a / 100.0, 0.5) * 255))
-    $('#value-alpha + div .ui-slider-bg').css('background', '#' + aHex + aHex + aHex)
-    if (sliderMode != 'white') {
-        $('#value-red + div .ui-slider-bg').css('background', getColor(100.0, r, 0.0, 0.0, 0.33))
-    }
-    else {
-        $('#value-red + div .ui-slider-bg').css('background', getWhite(100.0, r, 0.0))
-    }
-    if (sliderMode != 'white') {
-        $('#value-green + div .ui-slider-bg').css('background', getColor(100.0, 0.0, g, 0.0, 0.33))
-    }
-    else {
-        $('#value-green + div .ui-slider-bg').css('background', getWhite(100.0, 0.0, g))
-    }
-    $('#value-blue + div .ui-slider-bg').css('background', getColor(100.0, 0.0, 0.0, b, 0.33))*/
 }
 
 function changeValues(event) {
