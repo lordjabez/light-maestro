@@ -1,6 +1,7 @@
 # Special for light-maestro
 triggers
 scenes
+palette
 
 *.py[cod]
 
