@@ -374,13 +374,13 @@ $(document).bind('pagebeforeshow', function() {
 
     // Build the palettes and bind handlers to them.
     $('#white-palette button').each( function() {
-        var components = $(this).attr('color').split(',').map(parseFloat)
-        $(this).parent().css('background', getWhite(components[0], components[1], components[2]))
+        //var components = $(this).attr('color').split(',').map(parseFloat)
+        //$(this).parent().css('background', getWhite(components[0], components[1], components[2]))
         $(this).html('&nbsp;&nbsp;&nbsp;&nbsp;').button('refresh')
     })
     $('#color-palette button').each( function() {
-        var components = $(this).attr('color').split(',').map(parseFloat)
-        $(this).parent().css('background', getColor(components[0], components[1], components[2], components[3], 0.33))
+        //var components = $(this).attr('color').split(',').map(parseFloat)
+        //$(this).parent().css('background', getColor(components[0], components[1], components[2], components[3], 0.33))
         $(this).html('&nbsp;&nbsp;&nbsp;&nbsp;').button('refresh')
     })
     $('#white-palette button').unbind().bind('click', pickColor)

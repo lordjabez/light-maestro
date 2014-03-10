@@ -11,18 +11,23 @@
     text-align: center;
 }
 
-#control-buttons .ui-block-a, .ui-block-b {
-    text-align: center;
-}
-
-div[data-role="footer"] {
-    text-align: center;
-}
-
 #fixture-layout .ui-checkbox-on, .ui-checkbox-off {
     padding: 3px;
 }
 
 #fixture-layout .ui-checkbox .ui-btn-inner {
     border: 1px solid black;
+}
+
+#control-buttons .ui-block-a, .ui-block-b {
+    text-align: center;
+}
+
+#white-palette .ui-btn, #color-palette .ui-btn {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+div[data-role="footer"] {
+    text-align: center;
 }
