@@ -16,6 +16,8 @@ var scenes = []
 var sceneid = null
 var scene = null
 
+var forceRefresh = true
+
 
 function areDifferent(obj1, obj2){
   return JSON.stringify(obj1) !== JSON.stringify(obj2);
@@ -123,13 +125,13 @@ function setData(data) {
     else {
         hideAlert()
     }
-    if (areDifferent(channels, data.channels)) {
+    if (areDifferent(channels, data.channels) || forceRefresh) {
         refreshChannels(data)
     }
-    if (areDifferent(palette, data.palette)) {
+    if (areDifferent(palette, data.palette) || forceRefresh) {
         refreshPalette(data)
     }
-    if (areDifferent(scenes, data.scenes)) {
+    if (areDifferent(scenes, data.scenes) || forceRefresh) {
         refreshScenes(data)
     }
     if (data.status.scene) {
@@ -139,6 +141,7 @@ function setData(data) {
             $.ajax({method: 'GET', url: '/scenes/' + sceneid, success: setScene, error: alertNoComm})
         }
     }
+    forceRefresh = false
 }
 
 function setScene(data) {
@@ -440,6 +443,10 @@ $(document).bind('pagebeforeshow', function() {
 
     // Hide any status footers (they'll be auto-redisplayed if needed)
     $('div[data-role="footer"]').hide()
+
+    // Mark all data items as needing a refresh, and force a poll data call to do so.
+    forceRefresh = true
+    pollData()
 
 })
 
