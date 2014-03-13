@@ -1,6 +1,11 @@
 /* @copyright: 2013 Single D Software - All Rights Reserved
    @summary: Cascading style sheet for the Light Maestro GUI */
 
+* {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+}
+
 .ui-focus, .ui-btn:focus {
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
