@@ -24,8 +24,7 @@
 }
 
 #white-palette .ui-btn, #color-palette .ui-btn {
-    margin-left: 5px;
-    margin-right: 5px;
+    margin: 5px;
 }
 
 div[data-role="footer"] {
