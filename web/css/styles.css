@@ -6,6 +6,10 @@
     -webkit-user-select: none !important;
 }
 
+input[type="text"] {
+    -webkit-user-select: text !important;
+}
+
 .ui-focus, .ui-btn:focus {
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
