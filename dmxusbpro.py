@@ -24,7 +24,7 @@ _dmxfooter = bytearray([0xe7])
 class DmxUsbPro(console.Console):
     """Interface to ENTTEC DMX USB Pro compatible devices."""
 
-    def _openport(self):
+    def _open(self):
         if not self._port.isOpen():
             try:
                 self._port.open()
@@ -37,7 +37,15 @@ class DmxUsbPro(console.Console):
                 self._portavailable = True
                 _logger.info('Opened port {0}'.format(self._port.name))
 
-    def _closeport(self):
+    def _write(self, data):
+        self._open()
+        try:
+            self._port._write(_dmxheader + self._dmxsize + self._universe + _dmxfooter)
+        except IOError:
+            _logger.warning('Could not write to port {0}'.format(self._port.name))
+            self._close()
+
+    def _close(self):
         self._port.close()
 
     def getstatus(self):
@@ -53,18 +61,13 @@ class DmxUsbPro(console.Console):
                 self._universe[int(c)] = value
             except IndexError:
                 _logger.warning('Ignoring channel {0} since universe max is {1}'.format(c, console.maxchannels))
-        self._openport()
-        try:
-            self._port.write(_dmxheader + self._dmxsize + self._universe + _dmxfooter)
-        except IOError:
-            _logger.warning('Could not write to port {0}'.format(self._port.name))
-            self._closeport()
+        self._write()
 
-    def __init__(self, parameter):
+    def __init__(self, port):
         self._universe = bytearray(console.maxchannels + 1)
         self._dmxsize = bytearray(reversed(divmod(len(self._universe), 256)))
         self._port = serial.Serial()
         self._baudrate = 115200
-        self._port.port = parameter
+        self._port.port = port
         self._portavailable = None
         super().__init__()
