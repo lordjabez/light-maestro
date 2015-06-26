@@ -68,10 +68,10 @@ class OpenDmxUsb(console.Console):
             self._framerate = sum(lastcounts) / float(numcounts)
             time.sleep(1.0)
 
-    def __init__(self, parameter):
+    def __init__(self, port):
         self._universe = bytearray(513)
         self._port = serial.Serial()
-        self._port.port = parameter
+        self._port.port = port
         self._port.baudrate = 250000
         self._port.stopbits = 2
         self._portavailable = False
