@@ -26,8 +26,8 @@ class LoggingConsole(console.Console):
             valuesstr = ' '.join('{0:5.1f}'.format(v) for v in values)
             _logger.info(valuesstr)
 
-    def __init__(self, parameter):
-        params = parameter.split(',')
+    def __init__(self, paramstring):
+        params = paramstring.split(',')
         self._maxchannels = int(params[0])
         self._polldelay = 1.0 / float(params[1])
         super().__init__()

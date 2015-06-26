@@ -172,13 +172,13 @@ class Console():
                         self._setchannels(self._target)
                         self._target = None
 
-    def __init__(self, parameter='scenes'):
+    def __init__(self, scenepath='scenes'):
         """Initialize the console object."""
         self._channels = collections.OrderedDict((str(c+1), 0.0) for c in range(maxchannels))
         self._target = self._channels
         self._fadetime = time.time()
         self._sceneid = None
         self._lock = threading.Lock()
-        self._scenepath = parameter
+        self._scenepath = scenepath
         # Start the scene transition task
         threading.Thread(target=self._fader).start()

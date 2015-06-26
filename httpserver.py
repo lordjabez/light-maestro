@@ -6,7 +6,6 @@
 
 # Standard library imports
 import json
-import logging
 import threading
 
 # Additional library imports
@@ -190,4 +189,3 @@ def start(con):
     _Console.console = con
     kwargs = {'host': '0.0.0.0', 'port': 3520, 'debug': False, 'quiet': True}
     threading.Thread(target=bottle.run, kwargs=kwargs).start()
-

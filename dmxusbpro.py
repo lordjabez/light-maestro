@@ -24,6 +24,22 @@ _dmxfooter = bytearray([0xe7])
 class DmxUsbPro(console.Console):
     """Interface to ENTTEC DMX USB Pro compatible devices."""
 
+    def _openport(self):
+        if not self._port.isOpen():
+            try:
+                self._port.open()
+            except IOError:
+                if self._portavailable or self._portavailable is None:
+                    _logger.error('Unable to open port {0}'.format(self._port.name))
+                    self._portavailable = False
+                return
+            if not self._portavailable:
+                self._portavailable = True
+                _logger.info('Opened port {0}'.format(self._port.name))
+
+    def _closeport(self):
+        self._port.close()
+
     def getstatus(self):
         status = super().getstatus()
         status['condition'] = 'operational' if self._portavailable else 'nonoperational'
@@ -37,23 +53,12 @@ class DmxUsbPro(console.Console):
                 self._universe[int(c)] = value
             except IndexError:
                 _logger.warning('Ignoring channel {0} since universe max is {1}'.format(c, console.maxchannels))
-        if not self._port.isOpen():
-            try:
-                self._port.open()
-            except IOError:
-                if self._portavailable or self._portavailable is None:
-                    _logger.error('Unable to open port {0}'.format(self._port.name))
-                    self._portavailable = False
-                return
-            if not self._portavailable:
-                self._portavailable = True
-                _logger.info('Opened port {0}'.format(self._port.name))
+        self._openport()
         try:
             self._port.write(_dmxheader + self._dmxsize + self._universe + _dmxfooter)
         except IOError:
             _logger.warning('Could not write to port {0}'.format(self._port.name))
-            self._port.close()
-            return
+            self._closeport()
 
     def __init__(self, parameter):
         self._universe = bytearray(console.maxchannels + 1)
