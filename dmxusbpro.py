@@ -37,7 +37,7 @@ class DmxUsbPro(console.Console):
                 self._portavailable = True
                 _logger.info('Opened port {0}'.format(self._port.name))
 
-    def _write(self, data):
+    def _write(self):
         self._open()
         try:
             self._port._write(_dmxheader + self._dmxsize + self._universe + _dmxfooter)
